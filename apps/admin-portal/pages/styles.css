@@ -1,3 +1,29 @@
+/* @font-face {
+  font-family: 'Poppins';
+  src: url('/apps/admin-portal/public/fonts/Poppins-Black.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-BlackItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Bold.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-BoldItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-ExtraBold.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-ExtraBoldItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-ExtraLight.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-ExtraLightItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Italic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Light.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-LightItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Medium.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-MediumItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Regular.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-SemiBold.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-SemiBoldItalic.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-Thin.otf') format('otf');
+  src: url('/apps/admin-portal/public/fonts/Poppins-ThinItalic.otf') format('otf');
+
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+} */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 html {
   -webkit-text-size-adjust: 100%;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
@@ -7,8 +33,11 @@ html {
   tab-size: 4;
   scroll-behavior: smooth;
 }
+* {
+  font-family: 'Poppins', sans-serif;
+}
 body {
-  font-family: inherit;
+  font-family: 'Poppins', sans-serif;
   line-height: inherit;
   margin: 0;
 }
