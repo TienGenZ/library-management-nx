@@ -7,19 +7,17 @@ import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import SwapHorizontalCircleOutlinedIcon from '@mui/icons-material/SwapHorizontalCircleOutlined';
-import Image from 'next/image';
-import Link from 'next/link';
 
 const MenuBar = () => {
   const listItem = [
     {
-      href: '/card',
-      label: 'LẬP THẺ ĐỘC GIẢ',
+      href: '/reader',
+      label: 'QUẢN LÝ ĐỘC GIẢ',
       icon: <AddCardOutlinedIcon />,
     },
     {
       href: '/book',
-      label: 'NHẬN SÁCH MỚI',
+      label: 'QUẢN LÝ SÁCH',
       icon: <AccountBalanceWalletOutlinedIcon />,
     },
     {
@@ -46,7 +44,7 @@ const MenuBar = () => {
   return (
     <Box
       sx={{
-        width: '300px',
+        minWidth: '300px',
         height: '100vh',
         boxShadow: '5px 10px 10px #ccc',
         marginRight: '30px',
@@ -54,7 +52,7 @@ const MenuBar = () => {
         background: '#fff',
       }}
     >
-      <Box
+      {/* <Box
         sx={{
           cursor: 'pointer',
           display: 'flex',
@@ -71,7 +69,7 @@ const MenuBar = () => {
             height="150px"
           />
         </Link>
-      </Box>
+      </Box> */}
       <Box
         sx={{
           display: 'flex',

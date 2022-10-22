@@ -1,6 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import React from 'react';
-import Link, { LinkProps } from 'next/link';
+import { Box } from '@mui/material';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 interface ItemProps {
   href: string;
@@ -11,9 +10,9 @@ const MenuItem = (props: ItemProps) => {
   const router = useRouter();
   const isActive = router.asPath.split('?')[0].includes(props.href);
   const activeStyle = {
-    color: isActive ? '#333' : '#8993af',
-    fontWeight: isActive ? '500' : '400',
-    // background: isActive ? 'rgb(90, 34, 139)' : 'unset',
+    color: isActive ? '#5e35b1' : '#333',
+    fontWeight: isActive ? '600' : '400',
+    background: isActive ? '#ede7f6' : 'unset',
   };
   return (
     <Box>
@@ -25,8 +24,9 @@ const MenuItem = (props: ItemProps) => {
             display: 'flex',
             fontSize: '14px',
             borderRadius: '5px',
-            padding: '5px',
+            padding: '10px',
             margin: '2px 0',
+            alignItems: 'center',
           }}
         >
           <Box

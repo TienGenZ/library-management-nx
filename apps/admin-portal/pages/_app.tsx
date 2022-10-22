@@ -9,7 +9,8 @@ import './styles.css';
 function CustomApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
-  const isShowMenuBar = router.asPath.split('?')[0] !== '/sign-in';
+  const excludeMenuPath = ['/sign-in', '/'];
+  const isShowMenuBar = !excludeMenuPath.includes(router.asPath.split('?')[0]);
 
   useEffect(() => {
     // on initial load - run auth check
@@ -54,7 +55,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
         <Box
           sx={{
             display: 'flex',
-            background: '#faf9f5',
+            background: '#f4f5fa',
           }}
         >
           {isShowMenuBar && <MenuBar />}
