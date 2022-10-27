@@ -15,10 +15,65 @@ enum Role {
   LIBRARIAN
 }
 
-model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  username String  @unique
-  name     String?
-  role     Role    @default(LIBRARIAN)
+enum ReaderType {
+  STUDENT
+  TEACHER
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String?
+  name      String?
+  role      Role?    @default(LIBRARIAN)
+  createdAt DateTime @default(now())
+}
+
+model Reader {
+  id           Int            @id @default(autoincrement())
+  name         String?
+  email        String?
+  address      String?
+  dob          String?
+  type         ReaderType?    @default(STUDENT)
+  expiredAt    DateTime
+  createdAt    DateTime       @default(now())
+  readerToBook ReaderToBook[]
+}
+
+model BookType {
+  id   Int     @id @default(autoincrement())
+  name String?
+  book Book[]
+}
+
+model Publisher {
+  id   Int     @id @default(autoincrement())
+  name String?
+  book Book[]
+}
+
+model Book {
+  id           Int            @id @default(autoincrement())
+  name         String?
+  bookTypeId   Int
+  publisherId  Int
+  type         BookType       @relation(fields: [bookTypeId], references: [id])
+  publisher    Publisher      @relation(fields: [publisherId], references: [id])
+  author       String
+  publishedAt  String
+  createdAt    DateTime       @default(now())
+  readerToBook ReaderToBook[]
+}
+
+model ReaderToBook {
+  id        Int      @id @default(autoincrement())
+  readerId  Int
+  bookId    Int
+  reader    Reader   @relation(fields: [readerId], references: [id])
+  book      Book     @relation(fields: [bookId], references: [id])
+  returned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiredAt DateTime
 }
