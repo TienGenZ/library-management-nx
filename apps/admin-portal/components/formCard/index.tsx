@@ -1,3 +1,4 @@
+import API from '@api/index';
 import {
   Box,
   Button,
@@ -13,7 +14,6 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
-
 export interface CardValue {
   fullName: string;
   email: string;
@@ -53,6 +53,17 @@ const FormCard = (props: FormCardProps) => {
     };
 
   const handleSave = () => {
+    if (edit) {
+      console.log('aaâ');
+    } else {
+      API.post('/reader', {...values, expiredAt: values.dob}, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => console.log(response))
+        .catch((error) => console.log(error));
+    }
     valueChange(values);
   };
   // Re-render when isOpen change
@@ -64,14 +75,13 @@ const FormCard = (props: FormCardProps) => {
   // Re-render when isOpen change
   useEffect(() => {
     setEdit(isEdit);
-    console.log(`Ahuhuhiohi: ${isEdit}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit]);
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
-        {isEdit ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
+        {edit ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
       </DialogTitle>
       <DialogContent>
         <Box
@@ -145,8 +155,8 @@ const FormCard = (props: FormCardProps) => {
                 value={values.type}
                 onChange={handleChange('type')}
               >
-                <MenuItem value={'student'}>Học sinh</MenuItem>
-                <MenuItem value={'teacher'}>Giáo viên</MenuItem>
+                <MenuItem value={'STUDENT'}>Học sinh</MenuItem>
+                <MenuItem value={'TEACHER'}>Giáo viên</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -173,7 +183,7 @@ const FormCard = (props: FormCardProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Hủy</Button>
-        <Button onClick={handleSave}>{isEdit ? 'Lưu' : 'Tạo'}</Button>
+        <Button onClick={handleSave}>{edit ? 'Lưu' : 'Tạo'}</Button>
       </DialogActions>
     </Dialog>
   );
