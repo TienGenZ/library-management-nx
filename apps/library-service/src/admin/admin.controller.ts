@@ -6,13 +6,22 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/createAdmin.dto';
 import { signInDto } from './dto/signIn.dto';
 import { UpdateAdminDto } from './dto/updateAdmin.dto';
 
-@Controller()
+@Controller('/admin')
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  })
+)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
@@ -21,27 +30,27 @@ export class AdminController {
     return this.adminService.signIn(dto);
   }
 
-  @Get('/admin')
+  @Get('')
   findAll() {
     return this.adminService.findAll();
   }
 
-  @Post('/admin')
+  @Post('')
   create(@Body() dto: CreateAdminDto) {
     return this.adminService.create(dto);
   }
 
-  @Get('/admin/:id')
+  @Get('/:id')
   findById(@Param('id') id: number) {
     return this.adminService.findById(id);
   }
 
-  @Put('/admin/:id')
+  @Put('/:id')
   update(@Param('id') id: number, @Body() dto: UpdateAdminDto) {
     return this.adminService.update(id, dto);
   }
 
-  @Delete('/admin/:id')
+  @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.adminService.delete(id);
   }

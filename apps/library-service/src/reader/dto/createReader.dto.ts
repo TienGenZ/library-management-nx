@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum ReaderType {
   STUDENT = 'STUDENT',
@@ -8,8 +8,8 @@ export enum ReaderType {
 
 export class CreateReaderDto {
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @ApiProperty()

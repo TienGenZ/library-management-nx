@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { ReaderType } from './createReader.dto';
 
 export class UpdateReaderDto {
@@ -28,6 +28,7 @@ export class UpdateReaderDto {
   type?: ReaderType;
 
   @ApiPropertyOptional()
-  @IsDate()
-  expiredAt?: Date;
+  @IsString()
+  @IsNotEmpty()
+  expiredAt?: string;
 }

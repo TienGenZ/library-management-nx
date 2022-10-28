@@ -6,6 +6,8 @@ import {
   Param,
   Post,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import {
@@ -19,81 +21,88 @@ import {
   UpdatePublisherDto,
 } from './dto/updateBook.dto';
 
-@Controller()
+@Controller('/book')
+@UsePipes(
+  new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  })
+)
 export class BookController {
   constructor(private readonly bookService: BookService) {}
 
-  @Get('/book')
+  @Get()
   findAll() {
     return this.bookService.findAll();
   }
 
-  @Post('/book')
+  @Post()
   create(@Body() dto: CreateBookDto) {
     return this.bookService.create(dto);
   }
 
-  @Get('/book/:id')
+  @Get('/:id')
   findById(@Param('id') id: number) {
     return this.bookService.findById(id);
   }
 
-  @Put('/book/:id')
+  @Put('/:id')
   update(@Param('id') id: number, @Body() dto: UpdateBookDto) {
     return this.bookService.update(id, dto);
   }
 
-  @Delete('/book/:id')
+  @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.bookService.delete(id);
   }
 
-  @Get('/book/book-type')
+  @Get('/book-type')
   findAllBookType() {
     return this.bookService.findAllBookType();
   }
 
-  @Post('/book/book-type')
+  @Post('/book-type')
   createBookType(@Body() dto: CreateBookTypeDto) {
     return this.bookService.createBookType(dto);
   }
 
-  @Get('/book/book-type/:id')
+  @Get('/book-type/:id')
   findBookTypeById(@Param('id') id: number) {
     return this.bookService.findBookTypeById(id);
   }
 
-  @Put('/book/book-type/:id')
+  @Put('/book-type/:id')
   updateBookType(@Param('id') id: number, @Body() dto: UpdateBookTypeDto) {
     return this.bookService.updateBookType(id, dto);
   }
 
-  @Delete('/book/book-type/:id')
+  @Delete('/book-type/:id')
   deleteBookType(@Param('id') id: number) {
     return this.bookService.deleteBookType(id);
   }
 
-  @Get('/book/publisher')
+  @Get('/publisher')
   findAllPublisher() {
     return this.bookService.findAllPublisher();
   }
 
-  @Post('/book/publisher')
+  @Post('/publisher')
   createPublisher(@Body() dto: CreatePublisherDto) {
     return this.bookService.createPublisher(dto);
   }
 
-  @Get('/book/publisher/:id')
+  @Get('/publisher/:id')
   findPublisherById(@Param('id') id: number) {
     return this.bookService.findPublisherById(id);
   }
 
-  @Put('/book/publisher/:id')
+  @Put('/publisher/:id')
   updatePublisher(@Param('id') id: number, @Body() dto: UpdatePublisherDto) {
     return this.bookService.updatePublisher(id, dto);
   }
 
-  @Delete('/book/publisher/:id')
+  @Delete('/publisher/:id')
   deletePublisher(@Param('id') id: number) {
     return this.bookService.deletePublisher(id);
   }
