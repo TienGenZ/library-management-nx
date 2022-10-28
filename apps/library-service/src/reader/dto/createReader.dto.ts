@@ -23,8 +23,7 @@ export class CreateReaderDto {
   address: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+
   dob: string;
 
   @ApiProperty()
@@ -32,6 +31,7 @@ export class CreateReaderDto {
   type: ReaderType;
 
   @ApiProperty()
-  @IsDate()
-  expiredAt: Date;
+  @IsString()
+  @IsNotEmpty()
+  expiredAt: string;
 }

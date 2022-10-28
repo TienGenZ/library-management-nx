@@ -1,115 +1,80 @@
+import API from '@api/index';
 import FormCard, { CardValue } from '@components/formCard';
 import SearchBar from '@components/searchBar';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
+  Pagination,
   Paper,
+  Table,
   TableBody,
   TableContainer,
-  TableRow,
   TableHead,
-  Table,
-  Pagination,
+  TableRow,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
-
-function createData(
-  id: number,
-  fullName: string,
-  dob: string,
-  email: string,
-  address: string,
-  type: 'Học sinh' | 'Giáo viên',
-  createdAt: string,
-  expirationAt: string
-) {
-  return { id, fullName, dob, email, address, type, createdAt, expirationAt };
+export interface Reader {
+  id: number;
+  name: string;
+  dob: string;
+  email: string;
+  address: string;
+  type: 'STUDENT' | 'TEACHER';
+  createdAt: string;
+  expiredAt: string;
 }
-
-const rows = [
-  createData(
-    1,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-  createData(
-    2,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-  createData(
-    3,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-  createData(
-    4,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-  createData(
-    5,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-  createData(
-    6,
-    'Mai Thị Hằng Thư',
-    '01-01-1990',
-    'Thu.Mai@library.com',
-    '7/11 Trần Mai Ninh - Phường 12 - Quận Tân Bình',
-    'Học sinh',
-    '01-01-1990',
-    '01-01-2000'
-  ),
-];
 
 const Reader = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState<number>(null);
   const [page, setPage] = useState(1);
+  const [readerList, setReaderList] = useState<Reader[]>([]);
+  const [context, setContext] = useContext(Context);
+
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
+
+  const deleteReader = (id: number) => {
+    API.delete(`/reader/${id}`)
+      .then((response) => {
+        showToast({
+          message: 'Xóa thẻ độc giả thành công',
+        });
+        getReader();
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          message: 'ahuhuhu',
+        });
+      });
+  };
 
   const onShow = () => {
-    setIsEdit(false);
+    setIsEdit(null);
     setShowPopup(true);
   };
 
-  const onEdit = () => {
-    setIsEdit(true);
+  const onEdit = (id: number) => {
+    setIsEdit(id);
     setShowPopup(true);
   };
 
   const onDelete = (id: number) => {
-    console.log(id);
+    deleteReader(id);
   };
 
   const onClose = (closed: boolean) => {
@@ -117,7 +82,7 @@ const Reader = () => {
   };
 
   const handleValue = (value: CardValue) => {
-    console.log(value);
+    getReader();
   };
 
   const handleChangePage = (
@@ -127,6 +92,23 @@ const Reader = () => {
     setPage(value);
     console.log(`Current page: ${value}`);
   };
+
+  const getReader = () => {
+    API.get('/reader')
+      .then((response) => {
+        setReaderList(response.data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          message: 'ahuhuhu',
+        });
+      });
+  };
+
+  useEffect(() => {
+    getReader();
+  }, []);
 
   return (
     <Box
@@ -185,21 +167,21 @@ const Reader = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <StyledTableRow key={row.id}>
-                    <StyledTableCell>{row.id}</StyledTableCell>
-                    <StyledTableCell>{row.fullName}</StyledTableCell>
-                    <StyledTableCell>{row.dob}</StyledTableCell>
-                    <StyledTableCell>{row.email}</StyledTableCell>
-                    <StyledTableCell>{row.address}</StyledTableCell>
-                    <StyledTableCell>{row.type}</StyledTableCell>
-                    <StyledTableCell>{row.createdAt}</StyledTableCell>
-                    <StyledTableCell>{row.expirationAt}</StyledTableCell>
-                    <StyledTableCell align='right'>
-                      <Button onClick={onEdit}>
+                {readerList.map((reader) => (
+                  <StyledTableRow key={reader.id}>
+                    <StyledTableCell>{reader.id}</StyledTableCell>
+                    <StyledTableCell>{reader.name}</StyledTableCell>
+                    <StyledTableCell>{reader.dob}</StyledTableCell>
+                    <StyledTableCell>{reader.email}</StyledTableCell>
+                    <StyledTableCell>{reader.address}</StyledTableCell>
+                    <StyledTableCell>{reader.type}</StyledTableCell>
+                    <StyledTableCell>{reader.createdAt}</StyledTableCell>
+                    <StyledTableCell>{reader.expiredAt}</StyledTableCell>
+                    <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(reader.id)}>
                         <EditIcon />
                       </Button>
-                      <Button onClick={() => onDelete(row.id)}>
+                      <Button onClick={() => onDelete(reader.id)}>
                         <DeleteIcon />
                       </Button>
                     </StyledTableCell>

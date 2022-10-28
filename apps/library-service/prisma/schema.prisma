@@ -37,7 +37,7 @@ model Reader {
   address      String?
   dob          String?
   type         ReaderType?    @default(STUDENT)
-  expiredAt    DateTime
+  expiredAt    String
   createdAt    DateTime       @default(now())
   readerToBook ReaderToBook[]
 }
@@ -75,5 +75,5 @@ model ReaderToBook {
   book      Book     @relation(fields: [bookId], references: [id])
   returned  Boolean  @default(false)
   createdAt DateTime @default(now())
-  expiredAt DateTime
+  expiredAt String
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsInt } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateReaderToBookDto {
   @ApiProperty()
@@ -15,6 +15,7 @@ export class CreateReaderToBookDto {
   returned: boolean;
 
   @ApiProperty()
-  @IsDate()
-  expiredAt: Date;
+  @IsString()
+  @IsNotEmpty()
+  expiredAt: string;
 }

@@ -1,4 +1,6 @@
 import API from '@api/index';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
 import {
   Box,
   Button,
@@ -12,39 +14,52 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
 export interface CardValue {
-  fullName: string;
+  name: string;
   email: string;
   address: string;
-  type: 'student' | 'teacher';
+  type: 'STUDENT' | 'TEACHER';
   dob: string;
 }
 
 interface FormCardProps {
-  isEdit: boolean;
+  isEdit: number;
   isOpen: boolean;
   onClose: (value: boolean) => void;
   valueChange: (value: CardValue) => void;
 }
 
 const FormCard = (props: FormCardProps) => {
-  const { isEdit = false, isOpen = false, onClose, valueChange } = props;
+  const { isEdit = null, isOpen = false, onClose, valueChange } = props;
   const initialValue: CardValue = {
-    fullName: '',
-    email: '',
-    address: '',
-    type: 'student',
-    dob: '',
+    name: null,
+    email: null,
+    address: null,
+    type: 'STUDENT',
+    dob: null,
   };
   const [open, setOpen] = useState(isOpen);
-  const [edit, setEdit] = useState(isEdit);
+  const [editId, setEditId] = useState(isEdit);
   const [values, setValues] = useState(initialValue);
+  const [context, setContext] = useContext(Context);
+
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
 
   const handleClose = () => {
     setOpen(false);
     onClose(false);
+    setEditId(null);
+    setValues(initialValue);
   };
 
   const handleChange =
@@ -52,19 +67,56 @@ const FormCard = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
+  const handleExpiredDate = (): string => {
+    const date = new Date();
+    date.setMonth(date.getMonth() + 3);
+
+    const yyyy = date.getFullYear();
+    let mm = (date.getMonth() + 1).toString(); // Months start at 0!
+    let dd = date.getDate().toString();
+
+    if (+dd < 10) {
+      dd = '0' + dd;
+    }
+    if (+mm < 10) {
+      mm = '0' + mm;
+    }
+
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
   const handleSave = () => {
-    if (edit) {
-      console.log('aaâ');
+    if (editId) {
+      showToast({
+        message: 'Chỉnh sửa thẻ độc giả thành công',
+      });
     } else {
-      API.post('/reader', {...values, expiredAt: values.dob}, {
+      const value = {
+        ...values,
+        expiredAt: handleExpiredDate(),
+      };
+
+      API.post('/reader', value, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
-        .then((response) => console.log(response))
-        .catch((error) => console.log(error));
+        .then(() => {
+          showToast({
+            message: 'Lập thẻ độc giả thành công',
+          });
+          valueChange(values);
+          handleClose();
+        })
+        .catch((error) => {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: 'Lập thẻ độc giả không thành công',
+          });
+          console.log(error);
+        });
     }
-    valueChange(values);
   };
   // Re-render when isOpen change
   useEffect(() => {
@@ -74,14 +126,13 @@ const FormCard = (props: FormCardProps) => {
 
   // Re-render when isOpen change
   useEffect(() => {
-    setEdit(isEdit);
+    setEditId(isEdit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit]);
-
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
-        {edit ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
+        {editId ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
       </DialogTitle>
       <DialogContent>
         <Box
@@ -98,7 +149,7 @@ const FormCard = (props: FormCardProps) => {
                 variant="standard"
                 size="small"
                 type="text"
-                onChange={handleChange('fullName')}
+                onChange={handleChange('name')}
                 InputProps={{
                   sx: input,
                 }}
@@ -183,7 +234,7 @@ const FormCard = (props: FormCardProps) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Hủy</Button>
-        <Button onClick={handleSave}>{edit ? 'Lưu' : 'Tạo'}</Button>
+        <Button onClick={handleSave}>{editId ? 'Lưu' : 'Tạo'}</Button>
       </DialogActions>
     </Dialog>
   );
