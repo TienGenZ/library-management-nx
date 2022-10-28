@@ -23,7 +23,8 @@ export class CreateReaderDto {
   address: string;
 
   @ApiProperty()
-
+  @IsString()
+  @IsNotEmpty()
   dob: string;
 
   @ApiProperty()
