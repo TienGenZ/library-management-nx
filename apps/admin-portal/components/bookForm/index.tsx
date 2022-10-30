@@ -1,4 +1,7 @@
 import API from '@api/index';
+import { BookType } from '@components/bookCategory';
+import { Book } from '@components/listBook';
+import { PublisherValue } from '@components/publisher';
 import { ToastProps } from '@components/toast';
 import { Context } from '@context/state';
 import {
@@ -14,36 +17,39 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Reader } from 'pages/reader';
 import React, { useContext, useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
-export interface CardValue {
+
+export interface BookFormValue {
   name: string;
-  email: string;
-  address: string;
-  type: 'STUDENT' | 'TEACHER';
-  dob: string;
+  author: string;
+  bookTypeId: number;
+  publisherId: number;
+  publishedAt: string;
 }
 
-interface FormCardProps {
-  readerEdit?: Reader;
+interface BookFormProps {
+  bookEdit?: Book;
   isOpen: boolean;
   onClose: (value: boolean) => void;
-  valueChange: (value: CardValue) => void;
+  valueChange: (value: BookFormValue) => void;
 }
 
-const BookForm = (props: FormCardProps) => {
-  const { readerEdit, isOpen = false, onClose, valueChange } = props;
-  const initialValue: CardValue = {
+const BookForm = (props: BookFormProps) => {
+  const { bookEdit, isOpen = false, onClose, valueChange } = props;
+  const initialValue: BookFormValue = {
     name: '',
-    email: '',
-    address: '',
-    type: 'STUDENT',
-    dob: '',
+    author: '',
+    bookTypeId: null,
+    publisherId: null,
+    publishedAt: '',
   };
+
   const [open, setOpen] = useState(isOpen);
-  const [reader, setReader] = useState(readerEdit);
+  const [book, setBook] = useState(bookEdit);
   const [values, setValues] = useState(initialValue);
+  const [bookTypes, setBookTypes] = useState<BookType[]>([]);
+  const [publishers, setPublishers] = useState<PublisherValue[]>([]);
   const [context, setContext] = useContext(Context);
 
   const showToast = (props: ToastProps) => {
@@ -59,35 +65,18 @@ const BookForm = (props: FormCardProps) => {
   const handleClose = () => {
     setOpen(false);
     onClose(false);
-    setReader(null);
+    setBook(null);
     setValues(initialValue);
   };
 
   const handleChange =
-    (prop: keyof CardValue) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    (prop: keyof BookFormValue) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleExpiredDate = (): string => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 3);
-
-    const yyyy = date.getFullYear();
-    let mm = (date.getMonth() + 1).toString(); // Months start at 0!
-    let dd = date.getDate().toString();
-
-    if (+dd < 10) {
-      dd = '0' + dd;
-    }
-    if (+mm < 10) {
-      mm = '0' + mm;
-    }
-
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const handleCreateReader = (values) => {
-    API.post('/reader', values, {
+  const handleCreateBook = (values) => {
+    API.post('/book', values, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -109,8 +98,8 @@ const BookForm = (props: FormCardProps) => {
       });
   };
 
-  const handleUpdateReader = (id: number, values) => {
-    API.put(`/reader/${id}`, values, {
+  const handleUpdateBook = (id: number, values) => {
+    API.put(`/book/${id}`, values, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -132,39 +121,68 @@ const BookForm = (props: FormCardProps) => {
       });
   };
 
+  const getAllBookType = () => {
+    API.get('/book-type')
+      .then((response) => {
+        setBookTypes(response.data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Đã xảy ra lỗi khi lấy thông tin thể loại sách',
+        });
+      });
+  };
+
+  const getAllPublisher = () => {
+    API.get('/publisher')
+      .then((response) => {
+        console.log(response.data);
+        setPublishers(response.data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Đã xảy ra lỗi khi lấy thông tin nhà xuất bản',
+        });
+        console.log(error);
+      });
+  };
+
   const handleSave = () => {
-    if (reader?.id) {
-      handleUpdateReader(reader.id, values);
+    if (book?.id) {
+      handleUpdateBook(book.id, values);
     } else {
-      const value = {
-        ...values,
-        expiredAt: handleExpiredDate(),
-      };
-      handleCreateReader(value);
+      handleCreateBook(values);
     }
   };
 
   // Re-render when isOpen change
   useEffect(() => {
     setOpen(isOpen);
+    if (isOpen) {
+      getAllBookType();
+      getAllPublisher();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Re-render when isOpen change
   useEffect(() => {
-    setReader(readerEdit);
+    setBook(bookEdit);
 
-    if (readerEdit?.id) {
-      const { name, email, address, type, dob } = readerEdit;
-      setValues({ name, email, address, type, dob });
+    if (bookEdit?.id) {
+      console.log(bookEdit);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readerEdit]);
+  }, [bookEdit]);
 
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
-        s{reader?.id ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
+        {bookEdit?.id ? 'CHỈNH SỬA THÔNG TIN SÁCH' : 'THÊM SÁCH'}
       </DialogTitle>
       <DialogContent>
         <Box
@@ -174,7 +192,7 @@ const BookForm = (props: FormCardProps) => {
         >
           <Box sx={flex}>
             <Typography variant="inherit" sx={label}>
-              Họ và Tên:
+              Tên sách:
             </Typography>
             <FormControl sx={formControl}>
               <TextField
@@ -192,15 +210,15 @@ const BookForm = (props: FormCardProps) => {
 
           <Box sx={flex}>
             <Typography variant="inherit" sx={label}>
-              Email:
+              Tác giả:
             </Typography>
             <FormControl sx={formControl}>
               <TextField
                 variant="standard"
                 size="small"
                 type="text"
-                value={values?.email}
-                onChange={handleChange('email')}
+                value={values?.author}
+                onChange={handleChange('author')}
                 InputProps={{
                   sx: input,
                 }}
@@ -210,15 +228,15 @@ const BookForm = (props: FormCardProps) => {
 
           <Box sx={flex}>
             <Typography variant="inherit" sx={label}>
-              Địa chỉ:
+              Năm xuất bản:
             </Typography>
             <FormControl sx={formControl}>
               <TextField
                 variant="standard"
                 size="small"
                 type="text"
-                value={values?.address}
-                onChange={handleChange('address')}
+                value={values?.publishedAt}
+                onChange={handleChange('publishedAt')}
                 InputProps={{
                   sx: input,
                 }}
@@ -233,44 +251,49 @@ const BookForm = (props: FormCardProps) => {
             }}
           >
             <Typography variant="inherit" sx={label}>
-              Loại độc giả:
+              Thể loại:
             </Typography>
-            <FormControl variant="standard" size="small">
+            <FormControl sx={{ flex: 1 }} variant="standard" size="small">
               <Select
-                sx={{ width: 150 }}
-                value={values?.type}
-                onChange={handleChange('type')}
+                value={values?.bookTypeId}
+                onChange={handleChange('bookTypeId')}
               >
-                <MenuItem value={'STUDENT'}>Học sinh</MenuItem>
-                <MenuItem value={'TEACHER'}>Giáo viên</MenuItem>
+                {bookTypes.map((type) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
 
-          <Box sx={flex}>
+          <Box
+            sx={{
+              display: 'flex',
+              marginBottom: '10px',
+            }}
+          >
             <Typography variant="inherit" sx={label}>
-              Ngày sinh:
+              Nhà xuất bản:
             </Typography>
-            <FormControl sx={formControl}>
-              <TextField
-                variant="standard"
-                size="small"
-                id="date"
-                type="date"
-                value={values?.dob}
-                onChange={handleChange('dob')}
-                sx={{ width: 150 }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
+            <FormControl sx={{ flex: 1 }} variant="standard" size="small">
+              <Select
+                value={values?.publisherId}
+                onChange={handleChange('publisherId')}
+              >
+                {publishers.map((publisher) => (
+                  <MenuItem key={publisher.id} value={publisher.id}>
+                    {publisher.name}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
           </Box>
         </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Hủy</Button>
-        <Button onClick={handleSave}>{reader?.id ? 'Lưu' : 'Tạo'}</Button>
+        <Button onClick={handleSave}>{book?.id ? 'Lưu' : 'Tạo'}</Button>
       </DialogActions>
     </Dialog>
   );

@@ -1,12 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { createError } from '../errors/errors';
 import { PrismaService } from '../services/prisma.service';
-import {
-  CreateBookDto
-} from './dto/createBook.dto';
-import {
-  UpdateBookDto
-} from './dto/updateBook.dto';
+import { CreateBookDto } from './dto/createBook.dto';
+import { UpdateBookDto } from './dto/updateBook.dto';
 
 @Injectable()
 export class BookService {
@@ -26,7 +22,17 @@ export class BookService {
 
   async findAll() {
     try {
-      return this.prisma.book.findMany();
+      return this.prisma.book.findMany({
+        select: {
+          id: true,
+          name: true,
+          author: true,
+          publishedAt: true,
+          createdAt: true,
+          type: true,
+          publisher: true,
+        },
+      });
     } catch (error) {
       throw createError('Book', error);
     }
