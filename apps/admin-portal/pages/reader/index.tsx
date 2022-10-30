@@ -32,7 +32,7 @@ export interface Reader {
 
 const Reader = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [isEdit, setIsEdit] = useState<number>(null);
+  const [readerEdit, setReaderEdit] = useState<Reader>(null);
   const [page, setPage] = useState(1);
   const [readerList, setReaderList] = useState<Reader[]>([]);
   const [context, setContext] = useContext(Context);
@@ -64,12 +64,12 @@ const Reader = () => {
   };
 
   const onShow = () => {
-    setIsEdit(null);
+    setReaderEdit(null);
     setShowPopup(true);
   };
 
-  const onEdit = (id: number) => {
-    setIsEdit(id);
+  const onEdit = (reader: Reader) => {
+    setReaderEdit(reader);
     setShowPopup(true);
   };
 
@@ -79,6 +79,7 @@ const Reader = () => {
 
   const onClose = (closed: boolean) => {
     setShowPopup(closed);
+    setReaderEdit(null);
   };
 
   const handleValue = (value: CardValue) => {
@@ -130,7 +131,7 @@ const Reader = () => {
         <Box>
           <FormCard
             isOpen={showPopup}
-            isEdit={isEdit}
+            readerEdit={readerEdit}
             onClose={onClose}
             valueChange={handleValue}
           />
@@ -174,11 +175,13 @@ const Reader = () => {
                     <StyledTableCell>{reader.dob}</StyledTableCell>
                     <StyledTableCell>{reader.email}</StyledTableCell>
                     <StyledTableCell>{reader.address}</StyledTableCell>
-                    <StyledTableCell>{reader.type}</StyledTableCell>
+                    <StyledTableCell>
+                      {reader.type === 'TEACHER' ? 'Giáo viên' : 'Học sinh'}
+                    </StyledTableCell>
                     <StyledTableCell>{reader.createdAt}</StyledTableCell>
                     <StyledTableCell>{reader.expiredAt}</StyledTableCell>
                     <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(reader.id)}>
+                      <Button onClick={() => onEdit(reader)}>
                         <EditIcon />
                       </Button>
                       <Button onClick={() => onDelete(reader.id)}>

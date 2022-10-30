@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt } from 'class-validator';
 
-export class ReaderToBookQuery {
+export class ReaderToBooksQuery {
   @ApiPropertyOptional()
   @IsInt()
   readerId?: number;

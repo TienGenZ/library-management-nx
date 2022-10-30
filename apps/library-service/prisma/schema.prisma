@@ -77,3 +77,15 @@ model ReaderToBook {
   createdAt DateTime @default(now())
   expiredAt String
 }
+
+model Policy {
+  id                 Int @id @default(autoincrement())
+  minAge             Int
+  maxAge             Int
+  cardReaderDuration Int
+  bookDate           Int
+  maxBooks           Int
+  maxDate            Int
+
+  @@unique([minAge, maxAge, cardReaderDuration, bookDate, maxBooks, maxDate])
+}

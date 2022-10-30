@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { createError } from '../errors/errors';
 import { PrismaService } from '../services/prisma.service';
-import { CreateReaderToBookDto } from './dto/createReaderToBook.dto';
-import { UpdateReaderToBookDto } from './dto/updateReaderToBook.dto';
-import { ReaderToBookQuery } from './query/readerToBook.query';
+import { CreateReaderToBooksDto } from './dto/createReaderToBooks.dto';
+import { UpdateReaderToBooksDto } from './dto/updateReaderToBooks.dto';
+import { ReaderToBooksQuery } from './query/readerToBooks.query';
 
 @Injectable()
-export class ReaderToBookService {
+export class ReaderToBooksService {
   constructor(private prisma: PrismaService) {}
 
-  async findByQuery(query: ReaderToBookQuery) {
+  async findAllRecord() {
+    try {
+      return this.prisma.readerToBook.findMany();
+    } catch (error) {
+      throw createError('ReaderToBook', error);
+    }
+  }
+
+  async findByQuery(query: ReaderToBooksQuery) {
     try {
       return this.prisma.readerToBook.findMany({
         where: {
@@ -57,7 +65,7 @@ export class ReaderToBookService {
     }
   }
 
-  async create(dto: CreateReaderToBookDto) {
+  async create(dto: CreateReaderToBooksDto) {
     const { readerId, bookId, ...data } = dto;
     try {
       const reader = await this.prisma.readerToBook.create({
@@ -85,7 +93,7 @@ export class ReaderToBookService {
     }
   }
 
-  async update(id: number, data: UpdateReaderToBookDto) {
+  async update(id: number, data: UpdateReaderToBooksDto) {
     try {
       return this.prisma.readerToBook.update({
         where: { id: Number(id) || undefined },
