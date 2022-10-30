@@ -1,5 +1,10 @@
+import API from '@api/index';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import BookTypeForm from '@components/bookTypeForm';
+import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Button,
@@ -11,31 +16,38 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
-function createData(id: number, name: string) {
-  return { id, name };
+export interface BookType {
+  id: number;
+  name: string;
 }
-
-const rows = [
-  createData(1, 'Dế mèn phưu lưu kí'),
-  createData(2, 'Dế mèn phưu lưu kí'),
-  createData(3, 'Dế mèn phưu lưu kí'),
-  createData(4, 'Dế mèn phưu lưu kí'),
-  createData(5, 'Dế mèn phưu lưu kí'),
-  createData(6, 'Dế mèn phưu lưu kí'),
-];
 
 const BookCategory = () => {
   const [page, setPage] = useState(1);
+  const [context, setContext] = useContext(Context);
+  const [showPopup, setShowPopup] = useState(false);
+  const [bookTypes, setBookTypes] = useState<BookType[]>([]);
+  const [bookTypeEdit, setBookTypeEdit] = useState<BookType>(null);
 
-  const onEdit = () => {
-    console.log('ahuhuhuhu');
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
+
+  const onEdit = (bookType: BookType) => {
+    setShowPopup(true);
+    setBookTypeEdit(bookType);
   };
 
   const onDelete = (id: number) => {
-    console.log(id);
+    deleteBookType(id);
   };
 
   const handleChangePage = (
@@ -46,9 +58,75 @@ const BookCategory = () => {
     console.log(`Current page: ${value}`);
   };
 
+  const onShow = () => {
+    setBookTypeEdit(null);
+    setShowPopup(true);
+  };
+
+  const onClose = (closed: boolean) => {
+    setShowPopup(closed);
+    setBookTypeEdit(null);
+  };
+
+  const handleValue = (value) => {
+    getAllBookType();
+  };
+
+  const getAllBookType = () => {
+    API.get('/book-type')
+      .then((response) => {
+        setBookTypes(response.data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          message: 'ahuhuhu',
+        });
+      });
+  };
+
+  const deleteBookType = (id: number) => {
+    API.delete(`/book-type/${id}`)
+      .then(() => {
+        showToast({
+          message: 'Xóa thể loại sách thành công',
+        });
+        getAllBookType();
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      });
+  };
+
+  useEffect(() => {
+    getAllBookType();
+  }, []);
+
   return (
     <Box>
+      <BookTypeForm
+        isOpen={showPopup}
+        bookTypeEdit={bookTypeEdit}
+        onClose={onClose}
+        valueChange={handleValue}
+      ></BookTypeForm>
       <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'right',
+            margin: '10px 0',
+          }}
+        >
+          <Button variant="contained" onClick={onShow}>
+            <AddIcon />
+            Thêm thể loại sách
+          </Button>
+        </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
@@ -59,15 +137,15 @@ const BookCategory = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <StyledTableRow key={row.id}>
-                  <StyledTableCell>{row.id}</StyledTableCell>
-                  <StyledTableCell>{row.name}</StyledTableCell>
+              {bookTypes.map((bookType) => (
+                <StyledTableRow key={bookType.id}>
+                  <StyledTableCell>{bookType.id}</StyledTableCell>
+                  <StyledTableCell>{bookType.name}</StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={onEdit}>
+                    <Button onClick={() => onEdit(bookType)}>
                       <EditIcon />
                     </Button>
-                    <Button onClick={() => onDelete(row.id)}>
+                    <Button onClick={() => onDelete(bookType.id)}>
                       <DeleteIcon />
                     </Button>
                   </StyledTableCell>

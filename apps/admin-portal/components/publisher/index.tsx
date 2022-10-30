@@ -1,4 +1,5 @@
 import DeleteIcon from '@mui/icons-material/Delete';
+import API from '@api/index';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
@@ -11,31 +12,42 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
+import AddIcon from '@mui/icons-material/Add';
+import PublisherForm from '@components/publisherForm';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
 
-function createData(id: number, name: string) {
-  return { id, name };
+export interface PublisherValue {
+  id: number;
+  name: string;
 }
-
-const rows = [
-  createData(1, 'Nhà xuất bản Kim Đồng'),
-  createData(2, 'Nhà xuất bản Trẻ'),
-  createData(3, 'Nhà xuất bản Giáo dục'),
-  createData(4, 'Nhà xuất bản Thời đại'),
-  createData(5, 'Nhà xuất bản Lao Động'),
-  createData(6, 'Nhã Nam'),
-];
 
 const Publisher = () => {
   const [page, setPage] = useState(1);
+  const [context, setContext] = useContext(Context);
+  const [showPopup, setShowPopup] = useState(false);
+  const [publishers, setPublishers] = useState<PublisherValue[]>([]);
+  const [publisherEdit, setPublisherEdit] = useState(null);
 
-  const onEdit = () => {
-    console.log('ahuhuhuhu');
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
+
+  const onEdit = (publisher: PublisherValue) => {
+    setShowPopup(true);
+    setPublisherEdit(publisher);
   };
 
   const onDelete = (id: number) => {
-    console.log(id);
+    deletePublisher(id);
   };
 
   const handleChangePage = (
@@ -46,9 +58,75 @@ const Publisher = () => {
     console.log(`Current page: ${value}`);
   };
 
+  const onShow = () => {
+    setPublisherEdit(null);
+    setShowPopup(true);
+  };
+
+  const onClose = (closed: boolean) => {
+    setShowPopup(closed);
+    setPublisherEdit(null);
+  };
+
+  const handleValue = (value) => {
+    getPublishers();
+  };
+
+  const getPublishers = () => {
+    API.get('/publisher')
+      .then((response) => {
+        setPublishers(response.data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          message: 'ahuhuhu',
+        });
+      });
+  };
+
+  const deletePublisher = (id: number) => {
+    API.delete(`/publisher/${id}`)
+      .then(() => {
+        showToast({
+          message: 'Xóa nhà xuất bản thành công',
+        });
+        getPublishers();
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      });
+  };
+
+  useEffect(() => {
+    getPublishers();
+  }, []);
+
   return (
     <Box>
+      <PublisherForm
+        isOpen={showPopup}
+        publisherEdit={publisherEdit}
+        onClose={onClose}
+        valueChange={handleValue}
+      ></PublisherForm>
       <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'right',
+            margin: '10px 0',
+          }}
+        >
+          <Button variant="contained" onClick={onShow}>
+            <AddIcon />
+            Thêm nhà xuất bản
+          </Button>
+        </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
@@ -59,15 +137,15 @@ const Publisher = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <StyledTableRow key={row.id}>
-                  <StyledTableCell>{row.id}</StyledTableCell>
-                  <StyledTableCell>{row.name}</StyledTableCell>
+              {publishers.map((publisher) => (
+                <StyledTableRow key={publisher.id}>
+                  <StyledTableCell>{publisher.id}</StyledTableCell>
+                  <StyledTableCell>{publisher.name}</StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={onEdit}>
+                    <Button onClick={() => onEdit(publisher)}>
                       <EditIcon />
                     </Button>
-                    <Button onClick={() => onDelete(row.id)}>
+                    <Button onClick={() => onDelete(publisher.id)}>
                       <DeleteIcon />
                     </Button>
                   </StyledTableCell>

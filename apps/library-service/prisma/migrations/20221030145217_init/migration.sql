@@ -25,7 +25,7 @@ CREATE TABLE "Reader" (
     "address" TEXT,
     "dob" TEXT,
     "type" "ReaderType" DEFAULT 'STUDENT',
-    "expiredAt" TIMESTAMP(3) NOT NULL,
+    "expiredAt" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Reader_pkey" PRIMARY KEY ("id")
@@ -56,7 +56,6 @@ CREATE TABLE "Book" (
     "author" TEXT NOT NULL,
     "publishedAt" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "expiredAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Book_pkey" PRIMARY KEY ("id")
 );
@@ -68,9 +67,22 @@ CREATE TABLE "ReaderToBook" (
     "bookId" INTEGER NOT NULL,
     "returned" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "expiredAt" TIMESTAMP(3) NOT NULL,
+    "expiredAt" TEXT NOT NULL,
 
     CONSTRAINT "ReaderToBook_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Policy" (
+    "id" SERIAL NOT NULL,
+    "minAge" INTEGER NOT NULL,
+    "maxAge" INTEGER NOT NULL,
+    "cardReaderDuration" INTEGER NOT NULL,
+    "bookDate" INTEGER NOT NULL,
+    "maxBooks" INTEGER NOT NULL,
+    "maxDate" INTEGER NOT NULL,
+
+    CONSTRAINT "Policy_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -78,6 +90,15 @@ CREATE UNIQUE INDEX "Admin_username_key" ON "Admin"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Admin_email_key" ON "Admin"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "BookType_name_key" ON "BookType"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Publisher_name_key" ON "Publisher"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Policy_minAge_maxAge_cardReaderDuration_bookDate_maxBooks_m_key" ON "Policy"("minAge", "maxAge", "cardReaderDuration", "bookDate", "maxBooks", "maxDate");
 
 -- AddForeignKey
 ALTER TABLE "Book" ADD CONSTRAINT "Book_bookTypeId_fkey" FOREIGN KEY ("bookTypeId") REFERENCES "BookType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
