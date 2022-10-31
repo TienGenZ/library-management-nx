@@ -20,19 +20,19 @@ const MenuBar = () => {
       label: 'QUẢN LÝ SÁCH',
       icon: <AccountBalanceWalletOutlinedIcon />,
     },
-    {
-      href: '/search',
-      label: 'TRA CỨU HỌC SINH',
-      icon: <SearchOutlinedIcon />,
-    },
-    {
-      href: '/ticket',
-      label: 'LẬP PHIẾU MƯỢN',
-      icon: <ContentPasteOutlinedIcon />,
-    },
+    // {
+    //   href: '/search',
+    //   label: 'TRA CỨU HỌC SINH',
+    //   icon: <SearchOutlinedIcon />,
+    // },
+    // {
+    //   href: '/ticket',
+    //   label: 'LẬP PHIẾU MƯỢN',
+    //   icon: <ContentPasteOutlinedIcon />,
+    // },
     {
       href: '/exchange',
-      label: 'NHẬN TRẢ SÁCH',
+      label: 'MƯỢN TRẢ SÁCH',
       icon: <SwapHorizontalCircleOutlinedIcon />,
     },
     {

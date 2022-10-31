@@ -9,7 +9,8 @@ export class PolicyService {
   constructor(private prisma: PrismaService) {}
   async findAll() {
     try {
-      return this.prisma.policy.findMany();
+      const data = await this.prisma.policy.findFirstOrThrow();
+      return data;
     } catch (error) {
       throw createError('Policy', error);
     }
