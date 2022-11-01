@@ -1,3 +1,8 @@
+import API from '@api/index';
+import BookForm from '@components/bookForm';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -9,89 +14,43 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow,
+  TableRow
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
-function createData(
-  id: number,
-  name: string,
-  author: string,
-  addedDate: string,
-  publicDate: string,
-  amount: string,
-  type: string
-) {
-  return { id, name, author, addedDate, publicDate, amount, type };
+export interface Book {
+  id: number;
+  name: string;
+  author: string;
+  createdAt: string;
+  publishedAt: string;
+  publisher: string;
+  type: string;
 }
-
-const rows = [
-  createData(
-    1,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-  createData(
-    2,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-  createData(
-    3,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-  createData(
-    4,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-  createData(
-    5,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-  createData(
-    6,
-    'Dế mèn phưu lưu kí',
-    'Mai Thị Hằng Thư',
-    '20-10-2022',
-    '2020',
-    '10',
-    'Truyện thiếu nhi'
-  ),
-];
 
 const ListBook = () => {
   const [page, setPage] = useState(1);
+  const [context, setContext] = useContext(Context);
+  const [showPopup, setShowPopup] = useState(false);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [bookEdit, setBookEdit] = useState<Book>(null);
 
-  const onEdit = () => {
-    console.log('ahuhuhuhu');
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
+  const onEdit = (book: Book) => {
+    setBookEdit(book);
   };
 
   const onDelete = (id: number) => {
-    console.log(id);
+    deleteBook(id);
   };
 
   const handleChangePage = (
@@ -101,10 +60,88 @@ const ListBook = () => {
     setPage(value);
     console.log(`Current page: ${value}`);
   };
+  const onShow = () => {
+    setBookEdit(null);
+    setShowPopup(true);
+  };
+
+  const onClose = (closed: boolean) => {
+    setShowPopup(closed);
+    setBookEdit(null);
+  };
+
+  const handleValue = (value) => {
+    getAllBook();
+  };
+
+  const getAllBook = () => {
+    API.get('/book')
+      .then((response) => {
+        console.log(response.data);
+        const data = response.data?.map((book) => {
+          return {
+            id: book?.id,
+            name: book?.name,
+            author: book?.author,
+            publishedAt: book?.publishedAt,
+            createdAt: book?.createdAt,
+            publisher: book?.publisher?.name,
+            type: book?.type?.name,
+          };
+        });
+        setBooks(data);
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      });
+  };
+
+  const deleteBook = (id: number) => {
+    API.delete(`/book/${id}`)
+      .then(() => {
+        showToast({
+          message: 'Xóa sách thành công',
+        });
+        getAllBook();
+      })
+      .catch((error) => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      });
+  };
+
+  useEffect(() => {
+    getAllBook();
+  }, []);
 
   return (
     <Box>
+      <BookForm
+        isOpen={showPopup}
+        bookEdit={bookEdit}
+        onClose={onClose}
+        valueChange={handleValue}
+      ></BookForm>
       <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'right',
+            margin: '10px 0',
+          }}
+        >
+          <Button variant="contained" onClick={onShow}>
+            <AddIcon />
+            Thêm sách
+          </Button>
+        </Box>
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
@@ -114,26 +151,26 @@ const ListBook = () => {
                 <StyledTableCell>Tác giả</StyledTableCell>
                 <StyledTableCell>Ngày nhập</StyledTableCell>
                 <StyledTableCell>Năm xuất bản</StyledTableCell>
-                <StyledTableCell>Số lượng</StyledTableCell>
                 <StyledTableCell>Thể loại</StyledTableCell>
+                <StyledTableCell>Nhà xuất bản</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
-                <StyledTableRow key={row.id}>
-                  <StyledTableCell>{row.id}</StyledTableCell>
-                  <StyledTableCell>{row.name}</StyledTableCell>
-                  <StyledTableCell>{row.author}</StyledTableCell>
-                  <StyledTableCell>{row.addedDate}</StyledTableCell>
-                  <StyledTableCell>{row.publicDate}</StyledTableCell>
-                  <StyledTableCell>{row.amount}</StyledTableCell>
-                  <StyledTableCell>{row.type}</StyledTableCell>
+              {books.map((book) => (
+                <StyledTableRow key={book.id}>
+                  <StyledTableCell>{book.id}</StyledTableCell>
+                  <StyledTableCell>{book.name}</StyledTableCell>
+                  <StyledTableCell>{book.author}</StyledTableCell>
+                  <StyledTableCell>{book.createdAt}</StyledTableCell>
+                  <StyledTableCell>{book.publishedAt}</StyledTableCell>
+                  <StyledTableCell>{book.type}</StyledTableCell>
+                  <StyledTableCell>{book.publisher}</StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={onEdit}>
+                    <Button onClick={() => onEdit(book)}>
                       <EditIcon />
                     </Button>
-                    <Button onClick={() => onDelete(row.id)}>
+                    <Button onClick={() => onDelete(book.id)}>
                       <DeleteIcon />
                     </Button>
                   </StyledTableCell>
