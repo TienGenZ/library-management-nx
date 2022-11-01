@@ -15,7 +15,7 @@ import { UpdateReaderToBooksDto } from './dto/updateReaderToBooks.dto';
 import { ReaderToBooksQuery } from './query/readerToBooks.query';
 import { ReaderToBooksService } from './readerToBooks.service';
 
-@Controller('/reader/books')
+@Controller('checkout')
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -27,8 +27,8 @@ export class ReaderToBooksController {
   constructor(private readonly readerToBooksService: ReaderToBooksService) {}
 
   @Get()
-  findByQuery(@Query() query: ReaderToBooksQuery) {
-    return this.readerToBooksService.findByQuery(query);
+  findAll() {
+    return this.readerToBooksService.findAllRecord();
   }
 
   @Post()

@@ -40,6 +40,8 @@ model Reader {
   expiredAt    String
   createdAt    DateTime       @default(now())
   readerToBook ReaderToBook[]
+
+  @@unique([name, dob])
 }
 
 model BookType {
@@ -86,6 +88,4 @@ model Policy {
   bookDate           Int
   maxBooks           Int
   maxDate            Int
-
-  @@unique([minAge, maxAge, cardReaderDuration, bookDate, maxBooks, maxDate])
 }

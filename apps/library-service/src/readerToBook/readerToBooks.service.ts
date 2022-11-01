@@ -11,7 +11,14 @@ export class ReaderToBooksService {
 
   async findAllRecord() {
     try {
-      return this.prisma.readerToBook.findMany();
+      return this.prisma.readerToBook.findMany({
+        include: {
+          reader: true,
+          book: {
+            include: { type: true },
+          },
+        },
+      });
     } catch (error) {
       throw createError('ReaderToBook', error);
     }
