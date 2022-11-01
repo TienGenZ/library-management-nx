@@ -164,7 +164,7 @@ const FormCard = (props: FormCardProps) => {
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
-        s{reader?.id ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
+        {reader?.id ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
       </DialogTitle>
       <DialogContent>
         <Box

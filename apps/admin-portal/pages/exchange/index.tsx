@@ -1,5 +1,5 @@
 import API from '@api/index';
-import ExchangeForm, { ExchangeFormValue } from '@components/exchangeForm';
+import ExchangeForm from '@components/exchangeForm';
 import SearchBar from '@components/searchBar';
 import { ToastProps } from '@components/toast';
 import { Context } from '@context/state';
@@ -104,7 +104,7 @@ const Exchange = () => {
                 name: bookName,
                 type: { name: bookType },
               },
-              value: { name: readerName },
+              reader: { name: readerName },
               createdAt,
               expiredAt,
             } = value;
@@ -119,9 +119,7 @@ const Exchange = () => {
               expiredAt,
             };
           });
-
-          console.log(response.data)
-          // setData(allRecord);
+          setData(allRecord);
         }
       })
       .catch((error) => {
