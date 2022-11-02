@@ -14,7 +14,7 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
@@ -129,7 +129,13 @@ const ListBook = () => {
         onClose={onClose}
         valueChange={handleValue}
       ></BookForm>
-      <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -142,58 +148,64 @@ const ListBook = () => {
             Thêm sách
           </Button>
         </Box>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>ID</StyledTableCell>
-                <StyledTableCell>Tên sách</StyledTableCell>
-                <StyledTableCell>Tác giả</StyledTableCell>
-                <StyledTableCell>Ngày nhập</StyledTableCell>
-                <StyledTableCell>Năm xuất bản</StyledTableCell>
-                <StyledTableCell>Thể loại</StyledTableCell>
-                <StyledTableCell>Nhà xuất bản</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {books.map((book) => (
-                <StyledTableRow key={book.id}>
-                  <StyledTableCell>{book.id}</StyledTableCell>
-                  <StyledTableCell>{book.name}</StyledTableCell>
-                  <StyledTableCell>{book.author}</StyledTableCell>
-                  <StyledTableCell>{book.createdAt}</StyledTableCell>
-                  <StyledTableCell>{book.publishedAt}</StyledTableCell>
-                  <StyledTableCell>{book.type}</StyledTableCell>
-                  <StyledTableCell>{book.publisher}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    <Button onClick={() => onEdit(book)}>
-                      <EditIcon />
-                    </Button>
-                    <Button onClick={() => onDelete(book.id)}>
-                      <DeleteIcon />
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginTop: '20px',
-        }}
-      >
-        <Pagination
-          count={10}
-          page={page}
-          onChange={handleChangePage}
-          showFirstButton
-          showLastButton
-        />
+        <Box
+          sx={{
+            overflow: 'auto',
+          }}
+        >
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell>Tên sách</StyledTableCell>
+                  <StyledTableCell>Tác giả</StyledTableCell>
+                  <StyledTableCell>Ngày nhập</StyledTableCell>
+                  <StyledTableCell>Năm xuất bản</StyledTableCell>
+                  <StyledTableCell>Thể loại</StyledTableCell>
+                  <StyledTableCell>Nhà xuất bản</StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {books.map((book) => (
+                  <StyledTableRow key={book.id}>
+                    <StyledTableCell>{book.id}</StyledTableCell>
+                    <StyledTableCell>{book.name}</StyledTableCell>
+                    <StyledTableCell>{book.author}</StyledTableCell>
+                    <StyledTableCell>{book.createdAt}</StyledTableCell>
+                    <StyledTableCell>{book.publishedAt}</StyledTableCell>
+                    <StyledTableCell>{book.type}</StyledTableCell>
+                    <StyledTableCell>{book.publisher}</StyledTableCell>
+                    <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(book)}>
+                        <EditIcon />
+                      </Button>
+                      <Button onClick={() => onDelete(book.id)}>
+                        <DeleteIcon />
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '20px',
+          }}
+        >
+          <Pagination
+            count={10}
+            page={page}
+            onChange={handleChangePage}
+            showFirstButton
+            showLastButton
+          />
+        </Box>
       </Box>
     </Box>
   );

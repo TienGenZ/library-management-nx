@@ -27,6 +27,8 @@ const Book = () => {
           height: '100%',
           padding: '30px',
           boxShadow: 'rgb(58 53 65 / 10%) 0px 2px 10px 0px',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <Box sx={{ width: '100%' }}>
@@ -42,7 +44,11 @@ const Book = () => {
             <Tab value={2} label="Thể loại" />
           </Tabs>
         </Box>
-        <Box>
+        <Box
+          sx={{
+            flex: 1,
+          }}
+        >
           <TabPanel value={value} index={0}>
             <ListBook></ListBook>
           </TabPanel>

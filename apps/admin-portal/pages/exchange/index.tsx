@@ -36,6 +36,7 @@ export interface ReaderToBooks {
   bookType: string;
   author: string;
   expiredAt: string;
+  returned: boolean;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -107,6 +108,7 @@ const Exchange = () => {
               reader: { name: readerName },
               createdAt,
               expiredAt,
+              returned,
             } = value;
 
             return {
@@ -117,6 +119,7 @@ const Exchange = () => {
               readerName,
               createdAt,
               expiredAt,
+              returned,
             };
           });
           setData(allRecord);
@@ -129,6 +132,35 @@ const Exchange = () => {
           message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
         });
       });
+  };
+
+  const makeReturnedReaderToBooks = (id: number) => {
+    API.put(
+      `/checkout/${id}`,
+      { returned: true },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+      .then(() => {
+        showToast({
+          message: 'Nhận trả sách thành công',
+        });
+        getAllReaderToBooks();
+      })
+      .catch(() => {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      });
+  };
+
+  const handleReturnBook = (id: number) => {
+    makeReturnedReaderToBooks(id);
   };
 
   const handleChangePage = (
@@ -241,6 +273,7 @@ const Exchange = () => {
                   <StyledTableCell>Thể loại</StyledTableCell>
                   <StyledTableCell>Tác giả</StyledTableCell>
                   <StyledTableCell>Hạn trả</StyledTableCell>
+                  <StyledTableCell>Trạng thái</StyledTableCell>
                   <StyledTableCell></StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -254,10 +287,16 @@ const Exchange = () => {
                     <StyledTableCell>{value.bookType}</StyledTableCell>
                     <StyledTableCell>{value.author}</StyledTableCell>
                     <StyledTableCell>{value.expiredAt}</StyledTableCell>
+                    <StyledTableCell>
+                      {value.returned ? 'Đã trả' : 'Đang mượn'}
+                    </StyledTableCell>
                     <StyledTableCell align="right">
-                      <Button onClick={() => console.log('ahuhuhu')}>
-                        <DoneAllIcon sx={{ color: '#357a38' }} />
-                      </Button>
+                      {!value.returned && (
+                        <Button onClick={() => handleReturnBook(value.id)}>
+                          <DoneAllIcon sx={{ color: '#357a38' }} />
+                        </Button>
+                      )}
+
                       <Button
                         sx={{ color: '#2979f' }}
                         onClick={() => onEdit(value)}
