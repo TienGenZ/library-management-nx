@@ -67,15 +67,11 @@ const ExchangeForm = (props: ExchangeFormProps) => {
     };
 
   const handleCreateReaderToBooks = (values) => {
-    API.post(
-      '/checkout',
-      { ...values, returned: false, expiredAt: '2022-01-11' },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    API.post('/checkout', values, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
       .then(() => {
         showToast({
           message: 'Lập phiếu mượn sách thành công',
@@ -84,11 +80,14 @@ const ExchangeForm = (props: ExchangeFormProps) => {
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Lập phiếu mượn sách không thành công',
-        });
+        const message = 'Lập phiếu mượn sách không thành công';
+        if (error?.response?.status === 422) {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: error?.response?.data?.message || message,
+          });
+        }
         console.log(error);
       });
   };

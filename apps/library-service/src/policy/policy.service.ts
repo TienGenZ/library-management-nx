@@ -16,6 +16,15 @@ export class PolicyService {
     }
   }
 
+  async getPolicy() {
+    try {
+      const data = await this.prisma.policy.findFirstOrThrow();
+      return data;
+    } catch (error) {
+      throw createError('Policy', error);
+    }
+  }
+
   async findById(id: number) {
     try {
       const data = await this.prisma.policy.findFirstOrThrow({

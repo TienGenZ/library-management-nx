@@ -7,32 +7,27 @@ export enum ReaderType {
 }
 
 export class CreateReaderDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'Mai Thị Hằng Thư' })
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'MaiThu@library.com' })
   @IsString()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'TP.Hồ Chí Minh' })
   @IsString()
   @IsNotEmpty()
   address: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '2000-01-01' })
   @IsString()
   @IsNotEmpty()
   dob: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'STUDENT' })
   @IsEnum(ReaderType)
   type: ReaderType;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  expiredAt: string;
 }

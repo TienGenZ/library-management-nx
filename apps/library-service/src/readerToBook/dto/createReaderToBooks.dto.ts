@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt } from 'class-validator';
 
 export class CreateReaderToBooksDto {
   @ApiProperty()
@@ -9,13 +9,4 @@ export class CreateReaderToBooksDto {
   @ApiProperty()
   @IsInt()
   bookId: number;
-
-  @ApiProperty()
-  @IsBoolean()
-  returned: boolean;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  expiredAt: string;
 }

@@ -68,24 +68,6 @@ const FormCard = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleExpiredDate = (): string => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 3);
-
-    const yyyy = date.getFullYear();
-    let mm = (date.getMonth() + 1).toString(); // Months start at 0!
-    let dd = date.getDate().toString();
-
-    if (+dd < 10) {
-      dd = '0' + dd;
-    }
-    if (+mm < 10) {
-      mm = '0' + mm;
-    }
-
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
   const handleCreateReader = (values) => {
     API.post('/reader', values, {
       headers: {
@@ -100,11 +82,14 @@ const FormCard = (props: FormCardProps) => {
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Lập thẻ độc giả không thành công',
-        });
+        const message = 'Lập thẻ độc giả không thành công';
+        if (error?.response?.status === 422) {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: error?.response?.data?.message || message,
+          });
+        }
         console.log(error);
       });
   };
@@ -123,12 +108,14 @@ const FormCard = (props: FormCardProps) => {
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Chỉnh sửa thẻ độc giả không thành công',
-        });
-        console.log(error);
+        const message = 'Lập thẻ độc giả không thành công';
+        if (error?.response?.status === 422) {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: error?.response?.data?.message || message,
+          });
+        }
       });
   };
 
@@ -136,11 +123,7 @@ const FormCard = (props: FormCardProps) => {
     if (reader?.id) {
       handleUpdateReader(reader.id, values);
     } else {
-      const value = {
-        ...values,
-        expiredAt: handleExpiredDate(),
-      };
-      handleCreateReader(value);
+      handleCreateReader(values);
     }
   };
 

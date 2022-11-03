@@ -37,7 +37,7 @@ model Reader {
   address      String?
   dob          String?
   type         ReaderType?    @default(STUDENT)
-  expiredAt    String
+  expiredAt    DateTime
   createdAt    DateTime       @default(now())
   readerToBook ReaderToBook[]
 
