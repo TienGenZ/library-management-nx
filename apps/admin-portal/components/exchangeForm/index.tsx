@@ -20,7 +20,6 @@ import { flex, formControl, input, label, title } from './styles';
 export interface ExchangeFormValue {
   readerId: number;
   bookId: number;
-  expiredAt: string;
 }
 
 interface ExchangeFormProps {
@@ -35,7 +34,6 @@ const ExchangeForm = (props: ExchangeFormProps) => {
   const initialValue: ExchangeFormValue = {
     readerId: undefined,
     bookId: undefined,
-    expiredAt: '',
   };
 
   const [open, setOpen] = useState(isOpen);

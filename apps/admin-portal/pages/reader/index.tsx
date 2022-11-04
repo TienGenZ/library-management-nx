@@ -4,8 +4,8 @@ import SearchBar from '@components/searchBar';
 import { ToastProps } from '@components/toast';
 import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
@@ -15,7 +15,7 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow,
+  TableRow
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
@@ -182,10 +182,10 @@ const Reader = () => {
                     <StyledTableCell>{reader.expiredAt}</StyledTableCell>
                     <StyledTableCell align="right">
                       <Button onClick={() => onEdit(reader)}>
-                        <EditIcon />
+                        <DriveFileRenameOutlineIcon />
                       </Button>
                       <Button onClick={() => onDelete(reader.id)}>
-                        <DeleteIcon />
+                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>

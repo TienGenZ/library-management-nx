@@ -55,15 +55,23 @@ const Exchange = () => {
   const [data, setData] = useState<ReaderToBooks[]>([]);
   const [open, setOpen] = useState(false);
   const [idRemove, setIdRemove] = useState(null);
+  const [returnBookId, setReturnBookId] = useState(null);
   const [valueEdit, setValueEdit] = useState<ReaderToBooks>(null);
 
   const handleClose = () => {
     setOpen(false);
+    setIdRemove(null);
+    setReturnBookId(null);
   };
 
-  const handleRemove = () => {
-    deleteReaderToBooks(idRemove);
-    setOpen(false);
+  const handleConfirm = () => {
+    if (returnBookId) {
+      makeReturnedReaderToBooks(returnBookId);
+    }
+    if (idRemove) {
+      deleteReaderToBooks(idRemove);
+    }
+    handleClose();
   };
 
   const showToast = (props: ToastProps) => {
@@ -159,10 +167,6 @@ const Exchange = () => {
       });
   };
 
-  const handleReturnBook = (id: number) => {
-    makeReturnedReaderToBooks(id);
-  };
-
   const handleChangePage = (
     event: React.ChangeEvent<unknown>,
     value: number
@@ -179,6 +183,11 @@ const Exchange = () => {
   const onDelete = (id: number) => {
     setOpen(true);
     setIdRemove(id);
+  };
+
+  const onReturn = (id: number) => {
+    setOpen(true);
+    setReturnBookId(id);
   };
 
   const onClose = (closed: boolean) => {
@@ -232,17 +241,22 @@ const Exchange = () => {
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle sx={{ textAlign: 'center' }}>
-            Xóa phiếu mượn sách?
+            {returnBookId ? 'Nhận trả sách' : 'Xóa phiếu mượn sách?'}
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ minWidth: '400px' }}>
             <DialogContentText id="alert-dialog-slide-description">
-              Sau khi xóa không thể khôi phục thông tin
+              {returnBookId
+                ? 'Xác nhận sách đã được trả'
+                : 'Sau khi xóa không thể khôi phục thông tin'}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Hủy</Button>
-            <Button sx={{ color: '#f44336' }} onClick={handleRemove}>
-              Xóa
+            <Button
+              sx={{ color: returnBookId ? '#357a38' : '#f44336' }}
+              onClick={handleConfirm}
+            >
+              {returnBookId ? 'Xác nhận' : 'Xóa'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -292,7 +306,7 @@ const Exchange = () => {
                     </StyledTableCell>
                     <StyledTableCell align="right">
                       {!value.returned && (
-                        <Button onClick={() => handleReturnBook(value.id)}>
+                        <Button onClick={() => onReturn(value.id)}>
                           <DoneAllIcon sx={{ color: '#357a38' }} />
                         </Button>
                       )}

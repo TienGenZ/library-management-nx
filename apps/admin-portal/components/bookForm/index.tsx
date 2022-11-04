@@ -180,14 +180,14 @@ const BookForm = (props: BookFormProps) => {
   }, [bookEdit]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog maxWidth="xl" open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
         {bookEdit?.id ? 'CHỈNH SỬA THÔNG TIN SÁCH' : 'THÊM SÁCH'}
       </DialogTitle>
       <DialogContent>
         <Box
           sx={{
-            minWidth: '500px',
+            minWidth: '700px',
           }}
         >
           <Box sx={flex}>
@@ -234,11 +234,12 @@ const BookForm = (props: BookFormProps) => {
               <TextField
                 variant="standard"
                 size="small"
-                type="text"
+                type="number"
                 value={values?.publishedAt}
                 onChange={handleChange('publishedAt')}
                 InputProps={{
                   sx: input,
+                  inputProps: { min: 0, max: 9999 },
                 }}
               />
             </FormControl>
@@ -247,7 +248,7 @@ const BookForm = (props: BookFormProps) => {
           <Box
             sx={{
               display: 'flex',
-              marginBottom: '10px',
+              marginBottom: '20px',
             }}
           >
             <Typography variant="inherit" sx={label}>
@@ -255,6 +256,7 @@ const BookForm = (props: BookFormProps) => {
             </Typography>
             <FormControl sx={{ flex: 1 }} variant="standard" size="small">
               <Select
+                sx={{ padding: '0 10px' }}
                 value={values?.bookTypeId}
                 onChange={handleChange('bookTypeId')}
               >
@@ -270,7 +272,7 @@ const BookForm = (props: BookFormProps) => {
           <Box
             sx={{
               display: 'flex',
-              marginBottom: '10px',
+              marginBottom: '20px',
             }}
           >
             <Typography variant="inherit" sx={label}>
@@ -278,6 +280,7 @@ const BookForm = (props: BookFormProps) => {
             </Typography>
             <FormControl sx={{ flex: 1 }} variant="standard" size="small">
               <Select
+                sx={{ padding: '0 10px' }}
                 value={values?.publisherId}
                 onChange={handleChange('publisherId')}
               >

@@ -14,15 +14,19 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { Reader } from 'pages/reader';
 import React, { useContext, useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
+
 export interface CardValue {
   name: string;
   email: string;
   address: string;
   type: 'STUDENT' | 'TEACHER';
-  dob: string;
+  dob: Dayjs | null;
 }
 
 interface FormCardProps {
@@ -39,11 +43,12 @@ const FormCard = (props: FormCardProps) => {
     email: '',
     address: '',
     type: 'STUDENT',
-    dob: '',
+    dob: null,
   };
   const [open, setOpen] = useState(isOpen);
   const [reader, setReader] = useState(readerEdit);
   const [values, setValues] = useState(initialValue);
+  const [dob, setDob] = useState<Dayjs | null>(null);
   const [context, setContext] = useContext(Context);
 
   const showToast = (props: ToastProps) => {
@@ -61,6 +66,7 @@ const FormCard = (props: FormCardProps) => {
     onClose(false);
     setReader(null);
     setValues(initialValue);
+    setDob(null);
   };
 
   const handleChange =
@@ -139,20 +145,22 @@ const FormCard = (props: FormCardProps) => {
 
     if (readerEdit?.id) {
       const { name, email, address, type, dob } = readerEdit;
-      setValues({ name, email, address, type, dob });
+      setValues({ name, email, address, type, dob: null });
+      setDob(dayjs(dob));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readerEdit]);
 
   return (
-    <Dialog open={open} onClose={handleClose}>
+    <Dialog maxWidth="xl" open={open} onClose={handleClose}>
       <DialogTitle sx={title}>
         {reader?.id ? 'CHỈNH SỬA THÔNG TIN' : 'LẬP THẺ ĐỘC GIẢ'}
       </DialogTitle>
       <DialogContent>
         <Box
           sx={{
-            minWidth: '500px',
+            minWidth: '700px',
+            padding: '0 20px',
           }}
         >
           <Box sx={flex}>
@@ -212,7 +220,8 @@ const FormCard = (props: FormCardProps) => {
           <Box
             sx={{
               display: 'flex',
-              marginBottom: '10px',
+              marginBottom: '20px',
+              marginTop: '10px',
             }}
           >
             <Typography variant="inherit" sx={label}>
@@ -220,7 +229,7 @@ const FormCard = (props: FormCardProps) => {
             </Typography>
             <FormControl variant="standard" size="small">
               <Select
-                sx={{ width: 150 }}
+                sx={{ width: 150, fontFamily: 'Poppins', padding: '0 10px' }}
                 value={values?.type}
                 onChange={handleChange('type')}
               >
@@ -234,20 +243,31 @@ const FormCard = (props: FormCardProps) => {
             <Typography variant="inherit" sx={label}>
               Ngày sinh:
             </Typography>
-            <FormControl sx={formControl}>
-              <TextField
-                variant="standard"
-                size="small"
-                id="date"
-                type="date"
-                value={values?.dob}
-                onChange={handleChange('dob')}
-                sx={{ width: 150 }}
-                InputLabelProps={{
-                  shrink: true,
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                disableFuture
+                openTo="year"
+                views={['year', 'month', 'day']}
+                value={dob}
+                onChange={(date: Dayjs) => {
+                  setDob(date);
+                  setValues({ ...values, dob: date });
                 }}
+                maxDate={dayjs(new Date())}
+                inputFormat="DD-MM-YYYY"
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    size="small"
+                    sx={{
+                      width: 150,
+                      fontFamily: 'Poppins',
+                    }}
+                  />
+                )}
               />
-            </FormControl>
+            </LocalizationProvider>
           </Box>
         </Box>
       </DialogContent>

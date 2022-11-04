@@ -3,8 +3,8 @@ import BookForm from '@components/bookForm';
 import { ToastProps } from '@components/toast';
 import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
@@ -179,10 +179,10 @@ const ListBook = () => {
                     <StyledTableCell>{book.publisher}</StyledTableCell>
                     <StyledTableCell align="right">
                       <Button onClick={() => onEdit(book)}>
-                        <EditIcon />
+                        <DriveFileRenameOutlineIcon />
                       </Button>
                       <Button onClick={() => onDelete(book.id)}>
-                        <DeleteIcon />
+                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                       </Button>
                     </StyledTableCell>
                   </StyledTableRow>
