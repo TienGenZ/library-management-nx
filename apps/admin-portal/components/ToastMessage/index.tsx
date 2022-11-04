@@ -12,11 +12,11 @@ export interface ToastProps {
 
 const Toast = () => {
   const [context] = useContext(Context);
-  const [toast, setToast] = useState<ToastProps>(context.toast);
+  const [toast, setToast] = useState<ToastProps>(context?.toast);
 
   useEffect(() => {
-    setToast(context.toast);
-  }, [context.toast]);
+    setToast(context?.toast);
+  }, [context?.toast]);
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
@@ -30,18 +30,18 @@ const Toast = () => {
   return (
     <Stack spacing={2} sx={{ width: '100%' }}>
       <Snackbar
-        open={toast.isShow}
+        open={toast?.isShow}
         autoHideDuration={6000}
         onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <Alert
           onClose={handleClose}
-          severity={toast.severity || 'success'}
+          severity={toast?.severity || 'success'}
           sx={{ width: '100%' }}
         >
-          <AlertTitle>{toast.title}</AlertTitle>
-          {toast.message}
+          <AlertTitle>{toast?.title}</AlertTitle>
+          {toast?.message}
         </Alert>
       </Snackbar>
     </Stack>

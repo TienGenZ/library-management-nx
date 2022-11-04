@@ -2,6 +2,25 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.admin.createMany({
+    data: [
+      {
+        username: 'admin',
+        email: 'Admin@library.com',
+        password: 'password',
+        name: 'Admin',
+        role: 'ADMIN',
+      },
+      {
+        username: 'librarian',
+        email: 'Librarian@library.com',
+        password: 'password',
+        name: 'Librarian',
+        role: 'LIBRARIAN',
+      },
+    ],
+  });
+
   await prisma.bookType.createMany({
     data: [
       {

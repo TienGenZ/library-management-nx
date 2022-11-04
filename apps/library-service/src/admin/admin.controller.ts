@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/createAdmin.dto';
-import { signInDto } from './dto/signIn.dto';
 import { UpdateAdminDto } from './dto/updateAdmin.dto';
 
 @Controller('/admin')
@@ -24,11 +23,6 @@ import { UpdateAdminDto } from './dto/updateAdmin.dto';
 )
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
-
-  @Post('/sign-in')
-  signIn(@Body() dto: signInDto) {
-    return this.adminService.signIn(dto);
-  }
 
   @Get('')
   findAll() {

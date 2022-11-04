@@ -1,3 +1,6 @@
+import API from '@api/index';
+import { ToastProps } from '@components/ToastMessage';
+import { Context } from '@context/state';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Box,
@@ -11,7 +14,8 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useContext, useState } from 'react';
 
 interface User {
   username: string;
@@ -19,20 +23,61 @@ interface User {
 }
 
 const SignIn = () => {
+  const [context, setContext] = useContext(Context);
   const [values, setValues] = useState<User>({
     username: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+  const router = useRouter();
 
   const handleChange =
     (prop: keyof User) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
+  const showToast = (props: ToastProps) => {
+    setContext({
+      ...context,
+      toast: {
+        isShow: true,
+        ...props,
+      },
+    });
+  };
 
   const handleSignIn = () => {
-    console.log(values);
+    API.post(`/sign-in`, values, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => {
+        window.localStorage.setItem('authorized', 'true');
+        setContext({
+          ...context,
+          authorized: true,
+        });
+        router.push('/reader');
+        showToast({
+          message: 'Đăng nhập thành công',
+        });
+      })
+      .catch((error) => {
+        if (error?.response?.status === 404) {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: 'Tài khoản hoặc mật khẩu không chính xác',
+          });
+        } else {
+          showToast({
+            severity: 'error',
+            title: 'Oopps!',
+            message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+          });
+        }
+      });
   };
 
   const handleClickRemember = () => {
