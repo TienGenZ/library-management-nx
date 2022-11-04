@@ -1,7 +1,7 @@
-import BookCategory from '@components/bookCategory';
-import ListBook from '@components/listBook';
-import Publisher from '@components/publisher';
-import { TabPanel } from '@components/tabPanel';
+import BookCategory from '@components/BookType';
+import ListBook from '@components/BookList';
+import Publisher from '@components/PublisherTab';
+import { TabPanel } from '@components/TabPanel';
 import { Box, Tab, Tabs, Typography } from '@mui/material';
 import React, { useState } from 'react';
 

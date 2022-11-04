@@ -1,5 +1,5 @@
 import API from '@api/index';
-import { ToastProps } from '@components/toast';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import {
   Box,

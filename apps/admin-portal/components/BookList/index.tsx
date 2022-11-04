@@ -1,6 +1,6 @@
 import API from '@api/index';
-import BookForm from '@components/bookForm';
-import { ToastProps } from '@components/toast';
+import BookForm from '@components/BookForm';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';

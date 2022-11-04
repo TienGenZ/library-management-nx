@@ -1,5 +1,5 @@
 import API from '@api/index';
-import { ToastProps } from '@components/toast';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
@@ -136,7 +136,11 @@ const Policy = () => {
         <Box>
           <Typography
             variant="h6"
-            sx={{ marginRight: '20px', textAlign: 'center' }}
+            sx={{
+              marginRight: '20px',
+              textAlign: 'center',
+              fontFamily: 'Montserrat',
+            }}
           >
             QUY ĐỊNH THƯ VIỆN
           </Typography>

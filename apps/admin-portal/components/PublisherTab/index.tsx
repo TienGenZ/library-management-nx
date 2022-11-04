@@ -1,10 +1,10 @@
 import API from '@api/index';
-import { ToastProps } from '@components/toast';
+import PublisherForm from '@components/PublisherForm';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
+import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import BookTypeForm from '@components/bookTypeForm';
-import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
   Button,
@@ -19,17 +19,17 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
-export interface BookType {
+export interface PublisherValue {
   id: number;
   name: string;
 }
 
-const BookCategory = () => {
+const Publisher = () => {
   const [page, setPage] = useState(1);
   const [context, setContext] = useContext(Context);
   const [showPopup, setShowPopup] = useState(false);
-  const [bookTypes, setBookTypes] = useState<BookType[]>([]);
-  const [bookTypeEdit, setBookTypeEdit] = useState<BookType>(null);
+  const [publishers, setPublishers] = useState<PublisherValue[]>([]);
+  const [publisherEdit, setPublisherEdit] = useState(null);
 
   const showToast = (props: ToastProps) => {
     setContext({
@@ -41,13 +41,13 @@ const BookCategory = () => {
     });
   };
 
-  const onEdit = (bookType: BookType) => {
+  const onEdit = (publisher: PublisherValue) => {
     setShowPopup(true);
-    setBookTypeEdit(bookType);
+    setPublisherEdit(publisher);
   };
 
   const onDelete = (id: number) => {
-    deleteBookType(id);
+    deletePublisher(id);
   };
 
   const handleChangePage = (
@@ -59,23 +59,23 @@ const BookCategory = () => {
   };
 
   const onShow = () => {
-    setBookTypeEdit(null);
+    setPublisherEdit(null);
     setShowPopup(true);
   };
 
   const onClose = (closed: boolean) => {
     setShowPopup(closed);
-    setBookTypeEdit(null);
+    setPublisherEdit(null);
   };
 
   const handleValue = (value) => {
-    getAllBookType();
+    getPublishers();
   };
 
-  const getAllBookType = () => {
-    API.get('/book-type')
+  const getPublishers = () => {
+    API.get('/publisher')
       .then((response) => {
-        setBookTypes(response.data);
+        setPublishers(response.data);
       })
       .catch((error) => {
         showToast({
@@ -85,13 +85,13 @@ const BookCategory = () => {
       });
   };
 
-  const deleteBookType = (id: number) => {
-    API.delete(`/book-type/${id}`)
+  const deletePublisher = (id: number) => {
+    API.delete(`/publisher/${id}`)
       .then(() => {
         showToast({
-          message: 'Xóa thể loại sách thành công',
+          message: 'Xóa nhà xuất bản thành công',
         });
-        getAllBookType();
+        getPublishers();
       })
       .catch((error) => {
         showToast({
@@ -103,17 +103,17 @@ const BookCategory = () => {
   };
 
   useEffect(() => {
-    getAllBookType();
+    getPublishers();
   }, []);
 
   return (
     <Box>
-      <BookTypeForm
+      <PublisherForm
         isOpen={showPopup}
-        bookTypeEdit={bookTypeEdit}
+        publisherEdit={publisherEdit}
         onClose={onClose}
         valueChange={handleValue}
-      ></BookTypeForm>
+      ></PublisherForm>
       <Box>
         <Box
           sx={{
@@ -124,7 +124,7 @@ const BookCategory = () => {
         >
           <Button variant="contained" onClick={onShow}>
             <AddIcon />
-            Thêm thể loại sách
+            Thêm nhà xuất bản
           </Button>
         </Box>
         <TableContainer component={Paper}>
@@ -132,20 +132,20 @@ const BookCategory = () => {
             <TableHead>
               <TableRow>
                 <StyledTableCell>ID</StyledTableCell>
-                <StyledTableCell>Thể loại sách</StyledTableCell>
+                <StyledTableCell>Nhà xuất bản</StyledTableCell>
                 <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {bookTypes.map((bookType) => (
-                <StyledTableRow key={bookType.id}>
-                  <StyledTableCell>{bookType.id}</StyledTableCell>
-                  <StyledTableCell>{bookType.name}</StyledTableCell>
+              {publishers.map((publisher) => (
+                <StyledTableRow key={publisher.id}>
+                  <StyledTableCell>{publisher.id}</StyledTableCell>
+                  <StyledTableCell>{publisher.name}</StyledTableCell>
                   <StyledTableCell align="right">
-                    <Button onClick={() => onEdit(bookType)}>
+                    <Button onClick={() => onEdit(publisher)}>
                       <DriveFileRenameOutlineIcon />
                     </Button>
-                    <Button onClick={() => onDelete(bookType.id)}>
+                    <Button onClick={() => onDelete(publisher.id)}>
                       <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                     </Button>
                   </StyledTableCell>
@@ -174,4 +174,4 @@ const BookCategory = () => {
   );
 };
 
-export default BookCategory;
+export default Publisher;

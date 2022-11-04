@@ -1,7 +1,7 @@
 import API from '@api/index';
-import FormCard, { CardValue } from '@components/formCard';
-import SearchBar from '@components/searchBar';
-import { ToastProps } from '@components/toast';
+import FormCard, { CardValue } from '@components/ReaderForm';
+import SearchBar from '@components/SearchBox';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -15,7 +15,7 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
@@ -124,75 +124,84 @@ const Reader = () => {
           background: '#fff',
           borderRadius: '10px',
           height: '100%',
+          maxHeight: '100%',
           padding: '30px',
           boxShadow: 'rgb(58 53 65 / 10%) 0px 2px 10px 0px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
         }}
       >
         <Box>
-          <FormCard
-            isOpen={showPopup}
-            readerEdit={readerEdit}
-            onClose={onClose}
-            valueChange={handleValue}
-          />
-        </Box>
-        <Box>
-          <SearchBar onChange={(value) => console.log(value)} />
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'right',
-            margin: '10px 0',
-          }}
-        >
-          <Button variant="contained" onClick={onShow}>
-            <AddIcon />
-            Lập thẻ độc giả
-          </Button>
-        </Box>
-        <Box>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>ID</StyledTableCell>
-                  <StyledTableCell>Họ và tên</StyledTableCell>
-                  <StyledTableCell>Ngày sinh</StyledTableCell>
-                  <StyledTableCell>Email</StyledTableCell>
-                  <StyledTableCell>Địa chỉ</StyledTableCell>
-                  <StyledTableCell>Loại độc giả</StyledTableCell>
-                  <StyledTableCell>Ngày lập thẻ</StyledTableCell>
-                  <StyledTableCell>Hạn thẻ</StyledTableCell>
-                  <StyledTableCell></StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {readerList.map((reader) => (
-                  <StyledTableRow key={reader.id}>
-                    <StyledTableCell>{reader.id}</StyledTableCell>
-                    <StyledTableCell>{reader.name}</StyledTableCell>
-                    <StyledTableCell>{reader.dob}</StyledTableCell>
-                    <StyledTableCell>{reader.email}</StyledTableCell>
-                    <StyledTableCell>{reader.address}</StyledTableCell>
-                    <StyledTableCell>
-                      {reader.type === 'TEACHER' ? 'Giáo viên' : 'Học sinh'}
-                    </StyledTableCell>
-                    <StyledTableCell>{reader.createdAt}</StyledTableCell>
-                    <StyledTableCell>{reader.expiredAt}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(reader)}>
-                        <DriveFileRenameOutlineIcon />
-                      </Button>
-                      <Button onClick={() => onDelete(reader.id)}>
-                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Box>
+            <FormCard
+              isOpen={showPopup}
+              readerEdit={readerEdit}
+              onClose={onClose}
+              valueChange={handleValue}
+            />
+          </Box>
+
+          <Box>
+            <SearchBar onChange={(value) => console.log(value)} />
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'right',
+              margin: '10px 0',
+            }}
+          >
+            <Button variant="contained" onClick={onShow}>
+              <AddIcon />
+              Lập thẻ độc giả
+            </Button>
+          </Box>
+
+          <Box sx={{ overflow: 'auto' }}>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>ID</StyledTableCell>
+                    <StyledTableCell>Họ và tên</StyledTableCell>
+                    <StyledTableCell>Ngày sinh</StyledTableCell>
+                    <StyledTableCell>Email</StyledTableCell>
+                    <StyledTableCell>Địa chỉ</StyledTableCell>
+                    <StyledTableCell>Loại độc giả</StyledTableCell>
+                    <StyledTableCell>Ngày lập thẻ</StyledTableCell>
+                    <StyledTableCell>Hạn thẻ</StyledTableCell>
+                    <StyledTableCell></StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {readerList.map((reader) => (
+                    <StyledTableRow key={reader.id}>
+                      <StyledTableCell>{reader.id}</StyledTableCell>
+                      <StyledTableCell>{reader.name}</StyledTableCell>
+                      <StyledTableCell>{reader.dob}</StyledTableCell>
+                      <StyledTableCell>{reader.email}</StyledTableCell>
+                      <StyledTableCell>{reader.address}</StyledTableCell>
+                      <StyledTableCell>
+                        {reader.type === 'TEACHER' ? 'Giáo viên' : 'Học sinh'}
+                      </StyledTableCell>
+                      <StyledTableCell>{reader.createdAt}</StyledTableCell>
+                      <StyledTableCell>{reader.expiredAt}</StyledTableCell>
+                      <StyledTableCell align="right">
+                        <Button onClick={() => onEdit(reader)}>
+                          <DriveFileRenameOutlineIcon />
+                        </Button>
+                        <Button onClick={() => onDelete(reader.id)}>
+                          <DeleteOutlineIcon sx={{ color: '#f44336' }} />
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
         <Box
           sx={{

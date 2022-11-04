@@ -6,6 +6,7 @@ export interface ContextProps {
     title?: string;
     message?: string;
   };
+  authorized?: boolean;
 }
 
 export const Context = createContext(null);

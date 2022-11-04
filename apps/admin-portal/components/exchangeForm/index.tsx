@@ -1,6 +1,6 @@
 import API from '@api/index';
-import { Book } from '@components/listBook';
-import { ToastProps } from '@components/toast';
+import { Book } from '@components/BookList';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import {
   Box,

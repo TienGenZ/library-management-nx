@@ -1,8 +1,8 @@
 import API from '@api/index';
-import { BookType } from '@components/bookCategory';
-import { Book } from '@components/listBook';
-import { PublisherValue } from '@components/publisher';
-import { ToastProps } from '@components/toast';
+import { BookType } from '@components/BookType';
+import { Book } from '@components/BookList';
+import { PublisherValue } from '@components/PublisherTab';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import {
   Box,

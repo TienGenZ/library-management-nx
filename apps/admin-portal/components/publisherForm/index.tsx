@@ -1,6 +1,6 @@
 import API from '@api/index';
-import { PublisherValue } from '@components/publisher';
-import { ToastProps } from '@components/toast';
+import { PublisherValue } from '@components/PublisherTab';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import {
   Box,

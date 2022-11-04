@@ -1,11 +1,11 @@
-import Toast from '@components/toast';
+import Toast from '@components/ToastMessage';
 import { Context, ContextProps } from '@context/state';
 import { Box } from '@mui/material';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import MenuBar from '../components/menuBar';
+import { useState } from 'react';
+import MenuBar from '../components/MenuBar';
 import './styles.css';
 
 function CustomApp({ Component, pageProps }: AppProps) {
@@ -16,6 +16,7 @@ function CustomApp({ Component, pageProps }: AppProps) {
     toast: {
       isShow: false,
     },
+    authorized: false,
   };
   const [context, setContext] = useState(contextInit);
   return (

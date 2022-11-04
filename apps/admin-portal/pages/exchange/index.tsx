@@ -1,7 +1,7 @@
 import API from '@api/index';
-import ExchangeForm from '@components/exchangeForm';
-import SearchBar from '@components/searchBar';
-import { ToastProps } from '@components/toast';
+import ExchangeForm from '@components/ExchangeForm';
+import SearchBar from '@components/SearchBox';
+import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
