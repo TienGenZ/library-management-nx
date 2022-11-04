@@ -1,11 +1,11 @@
 import RouteGuard from '@components/RouteGuard';
 import Toast from '@components/ToastMessage';
-import { Context, ContextProps } from '@context/state';
+import { Context } from '@context/state';
 import { Box } from '@mui/material';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MenuBar from '../components/MenuBar';
 import './styles.css';
 
@@ -23,17 +23,15 @@ function CustomApp({ Component, pageProps }: AppProps) {
       </Head>
       <Context.Provider value={[context, setContext]}>
         <RouteGuard>
-          <Box>
-            <Toast />
-            <Box
-              sx={{
-                display: 'flex',
-                background: '#f4f5fa',
-              }}
-            >
-              {isShowMenuBar && <MenuBar />}
-              <Component {...pageProps} />
-            </Box>
+          <Toast />
+          <Box
+            sx={{
+              display: 'flex',
+              background: '#f4f5fa',
+            }}
+          >
+            {isShowMenuBar && <MenuBar />}
+            <Component {...pageProps} />
           </Box>
         </RouteGuard>
       </Context.Provider>

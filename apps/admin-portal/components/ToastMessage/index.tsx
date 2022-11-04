@@ -1,6 +1,5 @@
 import { Context } from '@context/state';
 import { Alert, AlertTitle, Snackbar, Stack } from '@mui/material';
-import { Box } from '@mui/system';
 import { useContext, useEffect, useState } from 'react';
 
 export interface ToastProps {

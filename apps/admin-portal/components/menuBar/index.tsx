@@ -1,14 +1,16 @@
-import { Box } from '@mui/material';
-import React from 'react';
-import MenuItem from '../MenuItem';
-import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import ContentPasteOutlinedIcon from '@mui/icons-material/ContentPasteOutlined';
-import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import { Context } from '@context/state';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import SwapHorizontalCircleOutlinedIcon from '@mui/icons-material/SwapHorizontalCircleOutlined';
+import { Box, Typography } from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useContext } from 'react';
+import MenuItem from '../MenuItem';
 
 const MenuBar = () => {
+  const [context, setContext] = useContext(Context);
   const listItem = [
     {
       href: '/reader',
@@ -20,16 +22,6 @@ const MenuBar = () => {
       label: 'QUẢN LÝ SÁCH',
       icon: <AccountBalanceWalletOutlinedIcon />,
     },
-    // {
-    //   href: '/search',
-    //   label: 'TRA CỨU HỌC SINH',
-    //   icon: <SearchOutlinedIcon />,
-    // },
-    // {
-    //   href: '/ticket',
-    //   label: 'LẬP PHIẾU MƯỢN',
-    //   icon: <ContentPasteOutlinedIcon />,
-    // },
     {
       href: '/exchange',
       label: 'MƯỢN TRẢ SÁCH',
@@ -50,41 +42,61 @@ const MenuBar = () => {
         marginRight: '30px',
         padding: '30px 20px',
         background: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
-      {/* <Box
-        sx={{
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '20px',
-        }}
-      >
-        <Link href="/dashboard">
-          <Image
-            src="/imgs/ico.png"
-            alt="Picture of the author"
-            width="150px"
-            height="150px"
-          />
-        </Link>
-      </Box> */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        {listItem.map((item) => (
-          <MenuItem
-            key={item.label}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-          />
-        ))}
+      <Box>
+        <Box
+          sx={{
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '20px',
+          }}
+        >
+          <Link href="/dashboard">
+            <Box
+              sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+            >
+              <Image
+                src="/imgs/ico.png"
+                alt="Picture of the author"
+                width="50px"
+                height="50px"
+              />
+              <Typography
+                sx={{
+                  marginLeft: '20px',
+                  fontSize: '20px',
+                  fontWeight: 500,
+                }}
+                variant="inherit"
+              >
+                Thu Mai Library
+              </Typography>
+            </Box>
+          </Link>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {listItem.map((item) => (
+            <MenuItem
+              key={item.label}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+            />
+          ))}
+        </Box>
       </Box>
+      <Box>Chào mừng</Box>
     </Box>
   );
 };
