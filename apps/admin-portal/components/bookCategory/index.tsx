@@ -1,8 +1,8 @@
 import API from '@api/index';
 import { ToastProps } from '@components/toast';
 import { Context } from '@context/state';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import BookTypeForm from '@components/bookTypeForm';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -143,10 +143,10 @@ const BookCategory = () => {
                   <StyledTableCell>{bookType.name}</StyledTableCell>
                   <StyledTableCell align="right">
                     <Button onClick={() => onEdit(bookType)}>
-                      <EditIcon />
+                      <DriveFileRenameOutlineIcon />
                     </Button>
                     <Button onClick={() => onDelete(bookType.id)}>
-                      <DeleteIcon />
+                      <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>

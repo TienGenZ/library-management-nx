@@ -1,6 +1,10 @@
-import DeleteIcon from '@mui/icons-material/Delete';
 import API from '@api/index';
-import EditIcon from '@mui/icons-material/Edit';
+import PublisherForm from '@components/publisherForm';
+import { ToastProps } from '@components/toast';
+import { Context } from '@context/state';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
@@ -14,10 +18,6 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
-import AddIcon from '@mui/icons-material/Add';
-import PublisherForm from '@components/publisherForm';
-import { ToastProps } from '@components/toast';
-import { Context } from '@context/state';
 
 export interface PublisherValue {
   id: number;
@@ -143,10 +143,10 @@ const Publisher = () => {
                   <StyledTableCell>{publisher.name}</StyledTableCell>
                   <StyledTableCell align="right">
                     <Button onClick={() => onEdit(publisher)}>
-                      <EditIcon />
+                      <DriveFileRenameOutlineIcon />
                     </Button>
                     <Button onClick={() => onDelete(publisher.id)}>
-                      <DeleteIcon />
+                      <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>

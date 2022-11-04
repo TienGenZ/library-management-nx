@@ -33,13 +33,17 @@ const Book = () => {
       >
         <Box sx={{ width: '100%' }}>
           <Tabs
+            sx={{ color: '#5e35b1' }}
             value={value}
             onChange={handleChange}
-            textColor="secondary"
-            indicatorColor="secondary"
-            aria-label="secondary tabs example"
+            textColor="inherit"
+            TabIndicatorProps={{
+              style: {
+                backgroundColor: '#5e35b1',
+              },
+            }}
           >
-            <Tab value={0} label="Danh sách sách" />
+            <Tab value={0} label="Thư viện sách" />
             <Tab value={1} label="Nhà xuất bản" />
             <Tab value={2} label="Thể loại" />
           </Tabs>

@@ -229,7 +229,7 @@ const FormCard = (props: FormCardProps) => {
             </Typography>
             <FormControl variant="standard" size="small">
               <Select
-                sx={{ width: 150, fontFamily: 'Poppins', padding: '0 10px' }}
+                sx={{ width: 150, fontFamily: 'Montserrat', padding: '0 10px' }}
                 value={values?.type}
                 onChange={handleChange('type')}
               >
@@ -262,7 +262,7 @@ const FormCard = (props: FormCardProps) => {
                     size="small"
                     sx={{
                       width: 150,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Montserrat',
                     }}
                   />
                 )}

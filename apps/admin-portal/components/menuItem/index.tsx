@@ -11,7 +11,7 @@ const MenuItem = (props: ItemProps) => {
   const isActive = router.asPath.split('?')[0].includes(props.href);
   const activeStyle = {
     color: isActive ? '#5e35b1' : '#333',
-    fontWeight: isActive ? '600' : '400',
+    fontWeight: isActive ? '600' : '500',
     background: isActive ? '#ede7f6' : 'unset',
   };
   return (
