@@ -14,7 +14,7 @@ import {
   TableBody,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
@@ -127,33 +127,35 @@ const BookCategory = () => {
             Thêm thể loại sách
           </Button>
         </Box>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>ID</StyledTableCell>
-                <StyledTableCell>Thể loại sách</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookTypes.map((bookType) => (
-                <StyledTableRow key={bookType.id}>
-                  <StyledTableCell>{bookType.id}</StyledTableCell>
-                  <StyledTableCell>{bookType.name}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    <Button onClick={() => onEdit(bookType)}>
-                      <DriveFileRenameOutlineIcon />
-                    </Button>
-                    <Button onClick={() => onDelete(bookType.id)}>
-                      <DeleteOutlineIcon sx={{ color: '#f44336' }} />
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box sx={{ maxHeight: 'calc(100vh - 260px)', overflow: 'auto' }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell>Thể loại sách</StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {bookTypes.map((bookType) => (
+                  <StyledTableRow key={bookType.id}>
+                    <StyledTableCell>{bookType.id}</StyledTableCell>
+                    <StyledTableCell>{bookType.name}</StyledTableCell>
+                    <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(bookType)}>
+                        <DriveFileRenameOutlineIcon />
+                      </Button>
+                      <Button onClick={() => onDelete(bookType.id)}>
+                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
       <Box
         sx={{

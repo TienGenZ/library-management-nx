@@ -9,7 +9,11 @@ export class BookTypeService {
   constructor(private prisma: PrismaService) {}
   async findAllBookType() {
     try {
-      return this.prisma.bookType.findMany();
+      return this.prisma.bookType.findMany({
+        orderBy: {
+          id: 'asc',
+        },
+      });
     } catch (error) {
       throw createError('BookType', error);
     }

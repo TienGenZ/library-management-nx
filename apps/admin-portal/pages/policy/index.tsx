@@ -64,7 +64,7 @@ const Policy = () => {
   const onSave = () => {
     const { id, ...value } = policy;
     if (id) {
-      updatePolicy({ id, value });
+      updatePolicy({ id, body: value });
     } else {
       createPolicy(value);
     }

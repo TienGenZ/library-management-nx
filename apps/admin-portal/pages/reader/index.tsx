@@ -165,7 +165,7 @@ const Reader = () => {
             </Button>
           </Box>
 
-          <Box sx={{ overflow: 'auto' }}>
+          <Box sx={{ maxHeight: 'calc(100vh - 300px)', overflow: 'auto' }}>
             <TableContainer component={Paper}>
               <Table>
                 <TableHead>

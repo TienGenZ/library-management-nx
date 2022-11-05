@@ -27,8 +27,8 @@ function CustomApp({ Component, pageProps }: AppProps) {
   }
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Context.Provider value={[context, setContext]}>
+      <Context.Provider value={[context, setContext]}>
+        <PersistGate loading={null} persistor={persistor}>
           <RouteGuard>
             <Toast />
             <Box
@@ -41,8 +41,8 @@ function CustomApp({ Component, pageProps }: AppProps) {
               <Component {...pageProps} />
             </Box>
           </RouteGuard>
-        </Context.Provider>
-      </PersistGate>
+        </PersistGate>
+      </Context.Provider>
     </Provider>
   );
 }

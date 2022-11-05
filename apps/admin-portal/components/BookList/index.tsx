@@ -148,11 +148,7 @@ const ListBook = () => {
             Thêm sách
           </Button>
         </Box>
-        <Box
-          sx={{
-            overflow: 'auto',
-          }}
-        >
+        <Box sx={{ maxHeight: 'calc(100vh - 260px)', overflow: 'auto' }}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>

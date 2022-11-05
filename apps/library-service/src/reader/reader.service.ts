@@ -49,7 +49,11 @@ export class ReaderService {
 
   async findAll() {
     try {
-      return this.prisma.reader.findMany();
+      return this.prisma.reader.findMany({
+        orderBy: {
+          id: 'asc',
+        },
+      });
     } catch (error) {
       throw createError('Reader', error);
     }

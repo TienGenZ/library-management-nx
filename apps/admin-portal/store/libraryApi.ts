@@ -21,6 +21,13 @@ export const libraryApi = createApi({
       }),
     }),
 
+    getAllReader: builder.mutation({
+      query: () => ({
+        url: '/reader',
+        method: 'GET',
+      }),
+    }),
+
     createReader: builder.mutation({
       query: (body) => ({
         url: '/reader',
@@ -44,6 +51,13 @@ export const libraryApi = createApi({
       }),
     }),
 
+    getAllBook: builder.mutation({
+      query: () => ({
+        url: '/book',
+        method: 'GET',
+      }),
+    }),
+
     createBook: builder.mutation({
       query: (body) => ({
         url: '/book',
@@ -62,7 +76,97 @@ export const libraryApi = createApi({
 
     deleteBook: builder.mutation({
       query: (id: number) => ({
-        url: `/reader/${id}`,
+        url: `/book/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
+    getAllPublisher: builder.mutation({
+      query: () => ({
+        url: '/publisher',
+        method: 'GET',
+      }),
+    }),
+
+    createPublisher: builder.mutation({
+      query: (body) => ({
+        url: '/publisher',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    updatePublisher: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/publisher/${id}`,
+        method: 'PUT',
+        body,
+      }),
+    }),
+
+    deletePublisher: builder.mutation({
+      query: (id: number) => ({
+        url: `/publisher/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
+    getAllBookType: builder.mutation({
+      query: () => ({
+        url: '/book-type',
+        method: 'GET',
+      }),
+    }),
+
+    createBookType: builder.mutation({
+      query: (body) => ({
+        url: '/book-type',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    updateBookType: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/book-type/${id}`,
+        method: 'PUT',
+        body,
+      }),
+    }),
+
+    deleteBookType: builder.mutation({
+      query: (id: number) => ({
+        url: `/book-type/${id}`,
+        method: 'DELETE',
+      }),
+    }),
+
+    getAllCheckout: builder.mutation({
+      query: () => ({
+        url: '/checkout',
+        method: 'GET',
+      }),
+    }),
+
+    createCheckout: builder.mutation({
+      query: (body) => ({
+        url: '/checkout',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    updateCheckout: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/checkout/${id}`,
+        method: 'PUT',
+        body,
+      }),
+    }),
+
+    deleteCheckout: builder.mutation({
+      query: (id: number) => ({
+        url: `/checkout/${id}`,
         method: 'DELETE',
       }),
     }),
@@ -94,12 +198,26 @@ export const libraryApi = createApi({
 
 export const {
   useSignInMutation,
+  useGetAllReaderMutation,
   useCreateReaderMutation,
   useUpdateReaderMutation,
   useDeleteReaderMutation,
+  useGetAllBookMutation,
   useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useGetAllBookTypeMutation,
+  useCreateBookTypeMutation,
+  useUpdateBookTypeMutation,
+  useDeleteBookTypeMutation,
+  useGetAllPublisherMutation,
+  useCreatePublisherMutation,
+  useUpdatePublisherMutation,
+  useDeletePublisherMutation,
+  useGetAllCheckoutMutation,
+  useCreateCheckoutMutation,
+  useUpdateCheckoutMutation,
+  useDeleteCheckoutMutation,
   useGetPolicyMutation,
   useCreatePolicyMutation,
   useUpdatePolicyMutation,

@@ -9,7 +9,11 @@ export class PublisherService {
   constructor(private prisma: PrismaService) {}
   async findAllPublisher() {
     try {
-      return this.prisma.publisher.findMany();
+      return this.prisma.publisher.findMany({
+        orderBy: {
+          id: 'asc',
+        },
+      });
     } catch (error) {
       throw createError('Publisher', error);
     }

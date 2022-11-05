@@ -127,33 +127,35 @@ const Publisher = () => {
             Thêm nhà xuất bản
           </Button>
         </Box>
-        <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>ID</StyledTableCell>
-                <StyledTableCell>Nhà xuất bản</StyledTableCell>
-                <StyledTableCell></StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {publishers.map((publisher) => (
-                <StyledTableRow key={publisher.id}>
-                  <StyledTableCell>{publisher.id}</StyledTableCell>
-                  <StyledTableCell>{publisher.name}</StyledTableCell>
-                  <StyledTableCell align="right">
-                    <Button onClick={() => onEdit(publisher)}>
-                      <DriveFileRenameOutlineIcon />
-                    </Button>
-                    <Button onClick={() => onDelete(publisher.id)}>
-                      <DeleteOutlineIcon sx={{ color: '#f44336' }} />
-                    </Button>
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box sx={{ maxHeight: 'calc(100vh - 260px)', overflow: 'auto' }}>
+          <TableContainer component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell>Nhà xuất bản</StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {publishers.map((publisher) => (
+                  <StyledTableRow key={publisher.id}>
+                    <StyledTableCell>{publisher.id}</StyledTableCell>
+                    <StyledTableCell>{publisher.name}</StyledTableCell>
+                    <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(publisher)}>
+                        <DriveFileRenameOutlineIcon />
+                      </Button>
+                      <Button onClick={() => onDelete(publisher.id)}>
+                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
       <Box
         sx={{

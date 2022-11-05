@@ -37,7 +37,7 @@ const MenuBar = () => {
       icon: <AccountBalanceWalletOutlinedIcon />,
     },
     {
-      href: '/exchange',
+      href: '/checkout',
       label: 'MƯỢN TRẢ SÁCH',
       icon: <SwapHorizontalCircleOutlinedIcon />,
     },
