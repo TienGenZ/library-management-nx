@@ -1,7 +1,6 @@
 import API from '@api/index';
 import { BookType } from '@components/BookType';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
+
 import {
   Box,
   Button,
@@ -13,7 +12,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
 
 interface FormCardProps {
@@ -30,17 +29,6 @@ const BookTypeForm = (props: FormCardProps) => {
   const [open, setOpen] = useState(isOpen);
   const [bookType, setBookType] = useState(bookTypeEdit);
   const [values, setValues] = useState(initialValue);
-  const [context, setContext] = useContext(Context);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -61,18 +49,10 @@ const BookTypeForm = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Thêm thể loại sách thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Thêm thể loại sách không thành công',
-        });
         console.log(error);
       });
   };
@@ -84,18 +64,10 @@ const BookTypeForm = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Chỉnh sửa thể loại sách thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Chỉnh sửa thể loại sách không thành công',
-        });
         console.log(error);
       });
   };

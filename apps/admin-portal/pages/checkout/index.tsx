@@ -1,7 +1,5 @@
 import CheckoutForm from '@components/CheckoutForm';
 import SearchBar from '@components/SearchBox';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
@@ -28,7 +26,7 @@ import {
   useGetAllCheckoutMutation,
   useUpdateCheckoutMutation,
 } from '@store/libraryApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface ReaderToBooks {
@@ -44,6 +42,7 @@ export interface ReaderToBooks {
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     children: React.ReactElement<any, any>;
   },
   ref: React.Ref<unknown>
@@ -52,7 +51,6 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const Checkout = () => {
-  const [context, setContext] = useContext(Context);
   const [page, setPage] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
   const [data, setData] = useState<ReaderToBooks[]>([]);
@@ -77,24 +75,6 @@ const Checkout = () => {
       removeCheckout(idRemove);
     }
     closeConfirm();
-  };
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
-
-  const showError = () => {
-    showToast({
-      severity: 'error',
-      title: 'Oopps!',
-      message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-    });
   };
 
   const handleChangePage = (
@@ -177,7 +157,7 @@ const Checkout = () => {
 
   useEffect(() => {
     if (removeCheckoutResult.isError || returnBookResult.isError) {
-      showError();
+      console.log('errrrr');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [removeCheckoutResult.isError, returnBookResult.isError]);

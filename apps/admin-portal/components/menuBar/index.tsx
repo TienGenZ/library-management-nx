@@ -1,21 +1,18 @@
-import { Context } from '@context/state';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import SwapHorizontalCircleOutlinedIcon from '@mui/icons-material/SwapHorizontalCircleOutlined';
 import { Box, Button, Typography } from '@mui/material';
+import { clearStore } from '@store/appSlice';
 import { AppState } from '@store/store';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext } from 'react';
+import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import MenuItem from '../MenuItem';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { clearStore } from '@store/appSlice';
-import { useRouter } from 'next/router';
 
 const MenuBar = () => {
-  const [context, setContext] = useContext(Context);
   const user = useSelector((state: AppState) => state.app.user);
   const dispatch = useDispatch();
   const router = useRouter();

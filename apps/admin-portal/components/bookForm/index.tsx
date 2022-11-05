@@ -1,9 +1,7 @@
 import API from '@api/index';
-import { BookType } from '@components/BookType';
 import { Book } from '@components/BookList';
+import { BookType } from '@components/BookType';
 import { PublisherValue } from '@components/PublisherTab';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import {
   Box,
   Button,
@@ -17,7 +15,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
 
 export interface BookFormValue {
@@ -50,17 +48,6 @@ const BookForm = (props: BookFormProps) => {
   const [values, setValues] = useState(initialValue);
   const [bookTypes, setBookTypes] = useState<BookType[]>([]);
   const [publishers, setPublishers] = useState<PublisherValue[]>([]);
-  const [context, setContext] = useContext(Context);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -82,18 +69,10 @@ const BookForm = (props: BookFormProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Lập thẻ độc giả thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Lập thẻ độc giả không thành công',
-        });
         console.log(error);
       });
   };
@@ -105,18 +84,10 @@ const BookForm = (props: BookFormProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Chỉnh sửa thẻ độc giả thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Chỉnh sửa thẻ độc giả không thành công',
-        });
         console.log(error);
       });
   };
@@ -127,11 +98,7 @@ const BookForm = (props: BookFormProps) => {
         setBookTypes(response.data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Đã xảy ra lỗi khi lấy thông tin thể loại sách',
-        });
+        console.log(error);
       });
   };
 
@@ -142,11 +109,6 @@ const BookForm = (props: BookFormProps) => {
         setPublishers(response.data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Đã xảy ra lỗi khi lấy thông tin nhà xuất bản',
-        });
         console.log(error);
       });
   };

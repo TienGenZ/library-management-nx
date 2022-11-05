@@ -1,7 +1,5 @@
 import API from '@api/index';
 import { PublisherValue } from '@components/PublisherTab';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import {
   Box,
   Button,
@@ -13,7 +11,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
 
 interface FormCardProps {
@@ -30,17 +28,6 @@ const PublisherForm = (props: FormCardProps) => {
   const [open, setOpen] = useState(isOpen);
   const [publisher, setPublisher] = useState(publisherEdit);
   const [values, setValues] = useState(initialValue);
-  const [context, setContext] = useContext(Context);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -55,24 +42,6 @@ const PublisherForm = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleExpiredDate = (): string => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + 3);
-
-    const yyyy = date.getFullYear();
-    let mm = (date.getMonth() + 1).toString(); // Months start at 0!
-    let dd = date.getDate().toString();
-
-    if (+dd < 10) {
-      dd = '0' + dd;
-    }
-    if (+mm < 10) {
-      mm = '0' + mm;
-    }
-
-    return `${yyyy}-${mm}-${dd}`;
-  };
-
   const handleCreatePublisher = (values) => {
     API.post('/publisher', values, {
       headers: {
@@ -80,18 +49,10 @@ const PublisherForm = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Thêm nhà xuất bản thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Thêm nhà xuất bản không thành công',
-        });
         console.log(error);
       });
   };
@@ -103,18 +64,10 @@ const PublisherForm = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Chỉnh sửa nhà xuất bản thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Chỉnh sửa nhà xuất bản không thành công',
-        });
         console.log(error);
       });
   };

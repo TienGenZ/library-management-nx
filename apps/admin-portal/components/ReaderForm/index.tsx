@@ -1,6 +1,5 @@
 import API from '@api/index';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
+
 import {
   Box,
   Button,
@@ -18,7 +17,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { Reader } from 'pages/reader';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { flex, formControl, input, label, title } from './styles';
 
 export interface CardValue {
@@ -49,17 +48,6 @@ const FormCard = (props: FormCardProps) => {
   const [reader, setReader] = useState(readerEdit);
   const [values, setValues] = useState(initialValue);
   const [dob, setDob] = useState<Dayjs | null>(null);
-  const [context, setContext] = useContext(Context);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -81,21 +69,10 @@ const FormCard = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Lập thẻ độc giả thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        const message = 'Lập thẻ độc giả không thành công';
-        if (error?.response?.status === 422) {
-          showToast({
-            severity: 'error',
-            title: 'Oopps!',
-            message: error?.response?.data?.message || message,
-          });
-        }
         console.log(error);
       });
   };
@@ -107,21 +84,11 @@ const FormCard = (props: FormCardProps) => {
       },
     })
       .then(() => {
-        showToast({
-          message: 'Chỉnh sửa thẻ độc giả thành công',
-        });
         valueChange(values);
         handleClose();
       })
       .catch((error) => {
-        const message = 'Lập thẻ độc giả không thành công';
-        if (error?.response?.status === 422) {
-          showToast({
-            severity: 'error',
-            title: 'Oopps!',
-            message: error?.response?.data?.message || message,
-          });
-        }
+        console.log(error);
       });
   };
 

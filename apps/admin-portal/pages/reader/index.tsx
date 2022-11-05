@@ -1,8 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import FormCard, { CardValue } from '@components/ReaderForm';
 import SearchBar from '@components/SearchBox';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -18,7 +17,7 @@ import {
   TableRow,
 } from '@mui/material';
 import { AppState } from '@store/store';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 export interface Reader {
@@ -37,35 +36,19 @@ const Reader = () => {
   const [readerEdit, setReaderEdit] = useState<Reader>(null);
   const [page, setPage] = useState(1);
   const [readerList, setReaderList] = useState<Reader[]>([]);
-  const [context, setContext] = useContext(Context);
   const user = useSelector((state: AppState) => state.app.user);
 
   useEffect(() => {
     console.log(user);
   }, []);
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const deleteReader = (id: number) => {
     API.delete(`/reader/${id}`)
       .then((response) => {
-        showToast({
-          message: 'Xóa thẻ độc giả thành công',
-        });
         getReader();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          message: 'ahuhuhu',
-        });
+        console.log(error);
       });
   };
 
@@ -106,10 +89,7 @@ const Reader = () => {
         setReaderList(response.data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          message: 'ahuhuhu',
-        });
+        console.log(error);
       });
   };
 

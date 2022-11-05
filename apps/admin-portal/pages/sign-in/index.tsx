@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
   Box,
@@ -17,7 +15,7 @@ import { setAuthorized, setUser } from '@store/appSlice';
 import { useSignInMutation } from '@store/libraryApi';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 interface User {
@@ -27,9 +25,8 @@ interface User {
 
 const SignIn = () => {
   const dispatch = useDispatch();
-  const [context, setContext] = useContext(Context);
   const [signIn, result] = useSignInMutation();
-  const { data, error, isLoading, isSuccess, isError } = result;
+  const { data, error, isSuccess, isError } = result;
   const [values, setValues] = useState<User>({
     username: '',
     password: '',
@@ -42,16 +39,6 @@ const SignIn = () => {
     (prop: keyof User) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const handleClickRemember = () => {
     setRemember(!remember);
@@ -79,17 +66,9 @@ const SignIn = () => {
     if (isError) {
       dispatch(setAuthorized(false));
       if ('status' in error && error.status === 500) {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
+        console.log(error.status);
       } else {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Tài khoản hoặc mật khẩu không chính xác',
-        });
+        console.log(error);
       }
     }
   }, [isError]);

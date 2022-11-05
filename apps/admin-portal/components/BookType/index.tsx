@@ -1,7 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import BookTypeForm from '@components/BookTypeForm';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -16,7 +15,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface BookType {
@@ -26,20 +25,9 @@ export interface BookType {
 
 const BookCategory = () => {
   const [page, setPage] = useState(1);
-  const [context, setContext] = useContext(Context);
   const [showPopup, setShowPopup] = useState(false);
   const [bookTypes, setBookTypes] = useState<BookType[]>([]);
   const [bookTypeEdit, setBookTypeEdit] = useState<BookType>(null);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const onEdit = (bookType: BookType) => {
     setShowPopup(true);
@@ -78,27 +66,17 @@ const BookCategory = () => {
         setBookTypes(response.data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          message: 'ahuhuhu',
-        });
+        console.log(error);
       });
   };
 
   const deleteBookType = (id: number) => {
     API.delete(`/book-type/${id}`)
       .then(() => {
-        showToast({
-          message: 'Xóa thể loại sách thành công',
-        });
         getAllBookType();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
+        console.log('errr');
       });
   };
 

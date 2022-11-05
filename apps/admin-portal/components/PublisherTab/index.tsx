@@ -1,7 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import PublisherForm from '@components/PublisherForm';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -16,7 +15,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface PublisherValue {
@@ -26,20 +25,9 @@ export interface PublisherValue {
 
 const Publisher = () => {
   const [page, setPage] = useState(1);
-  const [context, setContext] = useContext(Context);
   const [showPopup, setShowPopup] = useState(false);
   const [publishers, setPublishers] = useState<PublisherValue[]>([]);
   const [publisherEdit, setPublisherEdit] = useState(null);
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
 
   const onEdit = (publisher: PublisherValue) => {
     setShowPopup(true);
@@ -78,27 +66,17 @@ const Publisher = () => {
         setPublishers(response.data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          message: 'ahuhuhu',
-        });
+        console.log(error);
       });
   };
 
   const deletePublisher = (id: number) => {
     API.delete(`/publisher/${id}`)
       .then(() => {
-        showToast({
-          message: 'Xóa nhà xuất bản thành công',
-        });
         getPublishers();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
+        console.log('errr');
       });
   };
 

@@ -1,14 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import API from '@api/index';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
 import {
   useCreatePolicyMutation,
   useGetPolicyMutation,
   useUpdatePolicyMutation,
 } from '@store/libraryApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { formControl, input } from './styles';
 
 export interface PolicyValue {
@@ -31,29 +28,10 @@ const Policy = () => {
     maxBooks: undefined,
     maxDate: undefined,
   };
-  const [context, setContext] = useContext(Context);
   const [policy, setPolicy] = useState<PolicyValue>(initValue);
   const [getPolicy, getPolicyResult] = useGetPolicyMutation();
   const [createPolicy, createResult] = useCreatePolicyMutation();
   const [updatePolicy, updateResult] = useUpdatePolicyMutation();
-
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
-
-  const showError = () => {
-    showToast({
-      severity: 'error',
-      title: 'Oopps!',
-      message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-    });
-  };
 
   const handleChange =
     (prop: keyof PolicyValue) =>
@@ -78,9 +56,7 @@ const Policy = () => {
 
   useEffect(() => {
     if (createResult.isSuccess || updateResult.isSuccess) {
-      showToast({
-        message: 'Thay đổi quy định thành công',
-      });
+      console.log('success');
     }
   }, [createResult.isSuccess, updateResult.isSuccess]);
 
@@ -90,7 +66,7 @@ const Policy = () => {
       updateResult.isError ||
       getPolicyResult.isError
     ) {
-      showError();
+      console.log('errrr');
     }
   }, [createResult.isError, updateResult.isError, getPolicyResult.isError]);
 

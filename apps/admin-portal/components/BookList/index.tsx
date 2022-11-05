@@ -1,7 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import BookForm from '@components/BookForm';
-import { ToastProps } from '@components/ToastMessage';
-import { Context } from '@context/state';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
@@ -16,7 +15,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface Book {
@@ -31,20 +30,10 @@ export interface Book {
 
 const ListBook = () => {
   const [page, setPage] = useState(1);
-  const [context, setContext] = useContext(Context);
   const [showPopup, setShowPopup] = useState(false);
   const [books, setBooks] = useState<Book[]>([]);
   const [bookEdit, setBookEdit] = useState<Book>(null);
 
-  const showToast = (props: ToastProps) => {
-    setContext({
-      ...context,
-      toast: {
-        isShow: true,
-        ...props,
-      },
-    });
-  };
   const onEdit = (book: Book) => {
     setBookEdit(book);
   };
@@ -92,28 +81,17 @@ const ListBook = () => {
         setBooks(data);
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
+        console.log('errr');
       });
   };
 
   const deleteBook = (id: number) => {
     API.delete(`/book/${id}`)
       .then(() => {
-        showToast({
-          message: 'Xóa sách thành công',
-        });
         getAllBook();
       })
       .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
+        console.log('errr');
       });
   };
 

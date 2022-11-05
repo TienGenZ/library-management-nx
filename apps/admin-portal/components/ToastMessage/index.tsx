@@ -1,6 +1,5 @@
-import { Context } from '@context/state';
 import { Alert, AlertTitle, Snackbar, Stack } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export interface ToastProps {
   isShow?: boolean;
@@ -10,12 +9,7 @@ export interface ToastProps {
 }
 
 const Toast = () => {
-  const [context] = useContext(Context);
-  const [toast, setToast] = useState<ToastProps>(context?.toast);
-
-  useEffect(() => {
-    setToast(context?.toast);
-  }, [context?.toast]);
+  const [toast, setToast] = useState<ToastProps>({});
 
   const handleClose = (
     event?: React.SyntheticEvent | Event,
