@@ -1,4 +1,4 @@
-import API from '@api/index';
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -14,9 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { setAuthorized, setUser } from '@store/appSlice';
+import { useSignInMutation } from '@store/libraryApi';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 interface User {
@@ -27,7 +28,8 @@ interface User {
 const SignIn = () => {
   const dispatch = useDispatch();
   const [context, setContext] = useContext(Context);
-
+  const [signIn, result] = useSignInMutation();
+  const { data, error, isLoading, isSuccess, isError } = result;
   const [values, setValues] = useState<User>({
     username: '',
     password: '',
@@ -40,6 +42,7 @@ const SignIn = () => {
     (prop: keyof User) => (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
+
   const showToast = (props: ToastProps) => {
     setContext({
       ...context,
@@ -48,34 +51,6 @@ const SignIn = () => {
         ...props,
       },
     });
-  };
-
-  const handleSignIn = () => {
-    API.post(`/sign-in`, values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        dispatch(setAuthorized(true));
-        dispatch(setUser({ ...res.data }));
-        router.push('/reader');
-      })
-      .catch((error) => {
-        if (error?.response?.status === 404) {
-          showToast({
-            severity: 'error',
-            title: 'Oopps!',
-            message: 'Tài khoản hoặc mật khẩu không chính xác',
-          });
-        } else {
-          showToast({
-            severity: 'error',
-            title: 'Oopps!',
-            message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-          });
-        }
-      });
   };
 
   const handleClickRemember = () => {
@@ -91,6 +66,33 @@ const SignIn = () => {
   ) => {
     event.preventDefault();
   };
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setAuthorized(true));
+      dispatch(setUser(data));
+      router.push('/reader');
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (isError) {
+      dispatch(setAuthorized(false));
+      if ('status' in error && error.status === 500) {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+        });
+      } else {
+        showToast({
+          severity: 'error',
+          title: 'Oopps!',
+          message: 'Tài khoản hoặc mật khẩu không chính xác',
+        });
+      }
+    }
+  }, [isError]);
 
   return (
     <Box
@@ -280,7 +282,7 @@ const SignIn = () => {
             </Box>
             <Button
               variant="contained"
-              onClick={handleSignIn}
+              onClick={() => signIn(values)}
               sx={{
                 background: 'rgb(90, 34, 139)',
                 fontWeight: '500',

@@ -4,26 +4,20 @@ import {
   configureStore,
   ThunkAction,
 } from '@reduxjs/toolkit';
-import {
-  FLUSH,
-  PAUSE,
-  PERSIST,
-  persistReducer,
-  persistStore,
-  PURGE,
-  REGISTER,
-  REHYDRATE,
-} from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { libraryApi } from './libraryApi';
 import { appSlice } from './appSlice';
 
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: [libraryApi.reducerPath],
 };
 
 const reducer = combineReducers({
   [appSlice.name]: appSlice.reducer,
+  [libraryApi.reducerPath]: libraryApi.reducer,
 });
 
 // this ensures your redux state is saved to persisted storage whenever it changes
@@ -34,10 +28,8 @@ const makeStore = () =>
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        },
-      }),
+        serializableCheck: false,
+      }).concat(libraryApi.middleware),
   });
 
 const reduxStore = () => {

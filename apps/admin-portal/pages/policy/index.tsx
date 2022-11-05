@@ -1,7 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import { ToastProps } from '@components/ToastMessage';
 import { Context } from '@context/state';
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
+import {
+  useCreatePolicyMutation,
+  useGetPolicyMutation,
+  useUpdatePolicyMutation,
+} from '@store/libraryApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { formControl, input } from './styles';
 
@@ -27,6 +33,9 @@ const Policy = () => {
   };
   const [context, setContext] = useContext(Context);
   const [policy, setPolicy] = useState<PolicyValue>(initValue);
+  const [getPolicy, getPolicyResult] = useGetPolicyMutation();
+  const [createPolicy, createResult] = useCreatePolicyMutation();
+  const [updatePolicy, updateResult] = useUpdatePolicyMutation();
 
   const showToast = (props: ToastProps) => {
     setContext({
@@ -38,60 +47,12 @@ const Policy = () => {
     });
   };
 
-  const handleGetPolicy = () => {
-    API.get('/policy')
-      .then((res) => {
-        if (res?.data?.id) {
-          setPolicy(res.data);
-        }
-      })
-      .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
-      });
-  };
-
-  const handleCreatePolicy = (value) => {
-    API.post(`/policy`, value, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        showToast({
-          message: 'Thay đổi quy định thành công',
-        });
-      })
-      .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
-      });
-  };
-
-  const handleUpdatePolicy = (id: number, value) => {
-    API.put(`/policy/${id}`, value, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        showToast({
-          message: 'Thay đổi quy định thành công',
-        });
-      })
-      .catch((error) => {
-        showToast({
-          severity: 'error',
-          title: 'Oopps!',
-          message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
-        });
-      });
+  const showError = () => {
+    showToast({
+      severity: 'error',
+      title: 'Oopps!',
+      message: 'Có lỗi xảy ra - vui lòng liên hệ quản trị viên',
+    });
   };
 
   const handleChange =
@@ -103,15 +64,38 @@ const Policy = () => {
   const onSave = () => {
     const { id, ...value } = policy;
     if (id) {
-      handleUpdatePolicy(id, value);
+      updatePolicy({ id, value });
     } else {
-      handleCreatePolicy(value);
+      createPolicy(value);
     }
   };
 
   useEffect(() => {
-    handleGetPolicy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (getPolicyResult.isSuccess) {
+      setPolicy(getPolicyResult?.data);
+    }
+  }, [getPolicyResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isSuccess || updateResult.isSuccess) {
+      showToast({
+        message: 'Thay đổi quy định thành công',
+      });
+    }
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    if (
+      createResult.isError ||
+      updateResult.isError ||
+      getPolicyResult.isError
+    ) {
+      showError();
+    }
+  }, [createResult.isError, updateResult.isError, getPolicyResult.isError]);
+
+  useEffect(() => {
+    getPolicy(null);
   }, []);
 
   return (
