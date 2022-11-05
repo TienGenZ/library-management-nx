@@ -17,7 +17,9 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { AppState } from '@store/store';
 import React, { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 export interface Reader {
   id: number;
@@ -36,7 +38,11 @@ const Reader = () => {
   const [page, setPage] = useState(1);
   const [readerList, setReaderList] = useState<Reader[]>([]);
   const [context, setContext] = useContext(Context);
+  const user = useSelector((state: AppState) => state.app.user);
 
+  useEffect(() => {
+    console.log(user);
+  }, []);
   const showToast = (props: ToastProps) => {
     setContext({
       ...context,

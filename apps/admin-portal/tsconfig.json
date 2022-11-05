@@ -28,6 +28,9 @@
       ],
       "@common/*": [
         "common/*"
+      ],
+      "@store/*": [
+        "store/*"
       ]
     }
   },

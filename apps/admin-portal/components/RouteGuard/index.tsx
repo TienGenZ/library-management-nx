@@ -1,21 +1,18 @@
-import { useState, useEffect, useContext } from 'react';
+import { AppState } from '@store/store';
 import { useRouter } from 'next/router';
-import { Context } from '@context/state';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const RouteGuard = ({ children }) => {
   const router = useRouter();
-  const [context, setContext] = useContext(Context);
-  const [authorized, setAuthorized] = useState(context?.authorized);
+  const auth = useSelector((state: AppState) => state.app.authorized);
+
+  console.log(`Auth: ${auth}`);
+  const [authorized, setAuthorized] = useState(auth);
 
   useEffect(() => {
-    const auth = window.localStorage.getItem('authorized');
-
     // on initial load - run auth check
-    if (auth || authorized) {
-      setAuthorized(true);
-      setContext({ ...context, authorized: true });
-      return;
-    }
+    if (authorized) return;
 
     authCheck(router.asPath);
     // on route change start - hide page content by setting authorized to false
@@ -32,7 +29,7 @@ const RouteGuard = ({ children }) => {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authorized]);
 
   const authCheck = (url: string) => {
     // redirect to login page if accessing a private page and not logged in

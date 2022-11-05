@@ -3,14 +3,28 @@ import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalance
 import AddCardOutlinedIcon from '@mui/icons-material/AddCardOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import SwapHorizontalCircleOutlinedIcon from '@mui/icons-material/SwapHorizontalCircleOutlined';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import { AppState } from '@store/store';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MenuItem from '../MenuItem';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { clearStore } from '@store/appSlice';
+import { useRouter } from 'next/router';
 
 const MenuBar = () => {
   const [context, setContext] = useContext(Context);
+  const user = useSelector((state: AppState) => state.app.user);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    dispatch(clearStore());
+    router.push('/sign-in');
+  };
+
   const listItem = [
     {
       href: '/reader',
@@ -96,7 +110,29 @@ const MenuBar = () => {
           ))}
         </Box>
       </Box>
-      <Box>Chào mừng</Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingTop: '20px',
+          borderTop: '1px solid #5e35b1',
+        }}
+      >
+        <Typography
+          sx={{
+            marginLeft: '20px',
+            fontSize: '16px',
+            fontWeight: 500,
+          }}
+          variant="inherit"
+        >
+          {user?.name}
+        </Typography>
+        <Button onClick={handleLogout} sx={{ color: '#5e35b1' }}>
+          <LogoutIcon />
+        </Button>
+      </Box>
     </Box>
   );
 };

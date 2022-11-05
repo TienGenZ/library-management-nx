@@ -13,9 +13,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { setAuthorized, setUser } from '@store/appSlice';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 interface User {
   username: string;
@@ -23,7 +25,9 @@ interface User {
 }
 
 const SignIn = () => {
+  const dispatch = useDispatch();
   const [context, setContext] = useContext(Context);
+
   const [values, setValues] = useState<User>({
     username: '',
     password: '',
@@ -53,15 +57,9 @@ const SignIn = () => {
       },
     })
       .then((res) => {
-        window.localStorage.setItem('authorized', 'true');
-        setContext({
-          ...context,
-          authorized: true,
-        });
+        dispatch(setAuthorized(true));
+        dispatch(setUser({ ...res.data }));
         router.push('/reader');
-        showToast({
-          message: 'Đăng nhập thành công',
-        });
       })
       .catch((error) => {
         if (error?.response?.status === 404) {
