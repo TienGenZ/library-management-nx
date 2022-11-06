@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import { BookType } from '@components/BookType';
 
@@ -12,7 +13,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
+import {
+  useCreateBookTypeMutation,
+  useUpdateBookTypeMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { flex, formControl, input, label, title } from './styles';
 
 interface FormCardProps {
@@ -29,6 +36,9 @@ const BookTypeForm = (props: FormCardProps) => {
   const [open, setOpen] = useState(isOpen);
   const [bookType, setBookType] = useState(bookTypeEdit);
   const [values, setValues] = useState(initialValue);
+  const [createBookType, createResult] = useCreateBookTypeMutation();
+  const [updateBookType, updateResult] = useUpdateBookTypeMutation();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpen(false);
@@ -42,48 +52,51 @@ const BookTypeForm = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleCreateBookType = (values) => {
-    API.post('/book-type', values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleUpdateBookType = (id: number, values) => {
-    API.put(`/book-type/${id}`, values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const handleSave = () => {
+    const value = { name: values.name.trim() };
     if (bookType?.id) {
-      handleUpdateBookType(bookType.id, values);
+      updateBookType({ id: bookType.id, body: value });
     } else {
-      handleCreateBookType(values);
+      createBookType(value);
     }
   };
+
+  useEffect(() => {
+    if (createResult.isSuccess || updateResult.isSuccess) {
+      dispatch(setAlert({ message: 'Thao tác thành công' }));
+      valueChange(values as any);
+      handleClose();
+    }
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isError || updateResult.isError) {
+      const isConflic =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        createResult.error?.status === 409 ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        updateResult.error?.status === 409;
+
+      if (isConflic) {
+        dispatch(
+          setAlert({ severity: 'error', message: 'Thể loại sách đã tồn tại' })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thao tác không thành công. Vui lòng thử lại',
+          })
+        );
+      }
+    }
+  }, [createResult.isError, updateResult.isError]);
 
   // Re-render when isOpen change
   useEffect(() => {
     setOpen(isOpen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Re-render when isOpen change
@@ -94,7 +107,6 @@ const BookTypeForm = (props: FormCardProps) => {
       const { name } = bookTypeEdit;
       setValues({ name });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookTypeEdit]);
 
   return (

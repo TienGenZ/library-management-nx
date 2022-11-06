@@ -10,9 +10,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
 import { useCreateCheckoutMutation } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
-import { flex, formControl, input, label, title } from './styles';
+import { useDispatch } from 'react-redux';
+import { detailText, flex, formControl, input, label, title } from './styles';
 
 export interface CheckoutFormValue {
   readerId: number;
@@ -35,6 +37,7 @@ const CheckoutForm = (props: ExchangeFormProps) => {
   const [openPopup, setOpenPopup] = useState(isOpen);
   const [values, setValues] = useState(initialValue);
   const [checkout, { isSuccess, isError }] = useCreateCheckoutMutation();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpenPopup(false);
@@ -49,13 +52,23 @@ const CheckoutForm = (props: ExchangeFormProps) => {
     };
 
   useEffect(() => {
-    created(true);
-    handleClose();
+    if (isSuccess) {
+      created(true);
+      dispatch(setAlert({ message: 'Lập phiếu mượn sách thành công' }));
+      handleClose();
+    }
   }, [isSuccess]);
 
   useEffect(() => {
-    created(false);
-    handleClose();
+    if (isError) {
+      created(false);
+      dispatch(
+        setAlert({
+          severity: 'error',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
+    }
   }, [isError]);
 
   // Re-render when isOpen change
@@ -64,12 +77,13 @@ const CheckoutForm = (props: ExchangeFormProps) => {
   }, [isOpen]);
 
   return (
-    <Dialog open={openPopup} onClose={handleClose}>
+    <Dialog maxWidth="xl" open={openPopup} onClose={handleClose}>
       <DialogTitle sx={title}>PHIẾU MƯỢN SÁCH</DialogTitle>
       <DialogContent>
         <Box
           sx={{
             minWidth: '500px',
+            display: 'flex',
           }}
         >
           <Box sx={flex}>
@@ -106,6 +120,54 @@ const CheckoutForm = (props: ExchangeFormProps) => {
                 }}
               />
             </FormControl>
+          </Box>
+
+          <Button
+            onClick={() => {
+              console.log('first');
+            }}
+          >
+            Kiểm tra
+          </Button>
+        </Box>
+
+        <Box
+          sx={{
+            marginTop: '20px',
+            minWidth: '500px',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Box sx={{ marginBottom: '10px' }}>
+            <Typography variant="inherit" sx={detailText}>
+              Tên độc giả:{' '}
+            </Typography>
+          </Box>
+          <Box sx={{ marginBottom: '10px' }}>
+            <Typography variant="inherit" sx={detailText}>
+              Tên sách:{' '}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex' }}>
+            <Box sx={{ marginBottom: '10px', marginRight: '20px' }}>
+              <Typography variant="inherit" sx={detailText}>
+                Thể loại:{' '}
+              </Typography>
+            </Box>
+
+            <Box sx={{ marginBottom: '10px' }}>
+              <Typography variant="inherit" sx={detailText}>
+                Tác giả:{' '}
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box sx={{ marginBottom: '10px' }}>
+            <Typography variant="inherit" sx={detailText}>
+              Hạn trả sách:{' '}
+            </Typography>
           </Box>
         </Box>
       </DialogContent>

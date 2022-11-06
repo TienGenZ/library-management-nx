@@ -15,7 +15,13 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
+import {
+  useGetAllBookTypeMutation,
+  useDeleteBookTypeMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface BookType {
@@ -28,14 +34,17 @@ const BookCategory = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [bookTypes, setBookTypes] = useState<BookType[]>([]);
   const [bookTypeEdit, setBookTypeEdit] = useState<BookType>(null);
+  const [getBooktype, getBookTypeResult] = useGetAllBookTypeMutation();
+  const [removeBooktype, removeResult] = useDeleteBookTypeMutation();
+  const dispatch = useDispatch();
 
-  const onEdit = (bookType: BookType) => {
+  const handleShowPopupEdit = (bookType: BookType) => {
     setShowPopup(true);
     setBookTypeEdit(bookType);
   };
 
   const onDelete = (id: number) => {
-    deleteBookType(id);
+    removeBooktype(id);
   };
 
   const handleChangePage = (
@@ -46,42 +55,42 @@ const BookCategory = () => {
     console.log(`Current page: ${value}`);
   };
 
-  const onShow = () => {
+  const handleShowPopup = () => {
     setBookTypeEdit(null);
     setShowPopup(true);
   };
 
-  const onClose = (closed: boolean) => {
+  const closePopup = (closed: boolean) => {
     setShowPopup(closed);
     setBookTypeEdit(null);
   };
 
-  const handleValue = (value) => {
-    getAllBookType();
-  };
-
-  const getAllBookType = () => {
-    API.get('/book-type')
-      .then((response) => {
-        setBookTypes(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const deleteBookType = (id: number) => {
-    API.delete(`/book-type/${id}`)
-      .then(() => {
-        getAllBookType();
-      })
-      .catch((error) => {
-        console.log('errr');
-      });
-  };
+  useEffect(() => {
+    if (getBookTypeResult.isSuccess) {
+      setBookTypes(getBookTypeResult?.data);
+    }
+  }, [getBookTypeResult.isSuccess]);
 
   useEffect(() => {
-    getAllBookType();
+    if (removeResult.isSuccess) {
+      dispatch(setAlert({ message: 'Xóa thể loại sách thành công' }));
+      getBooktype(null);
+    }
+  }, [removeResult.isSuccess]);
+
+  useEffect(() => {
+    if (removeResult.isError) {
+      dispatch(
+        setAlert({
+          severity: 'error',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
+    }
+  }, [removeResult.isError]);
+
+  useEffect(() => {
+    getBooktype(null);
   }, []);
 
   return (
@@ -89,8 +98,8 @@ const BookCategory = () => {
       <BookTypeForm
         isOpen={showPopup}
         bookTypeEdit={bookTypeEdit}
-        onClose={onClose}
-        valueChange={handleValue}
+        onClose={closePopup}
+        valueChange={() => getBooktype(null)}
       ></BookTypeForm>
       <Box>
         <Box
@@ -100,7 +109,7 @@ const BookCategory = () => {
             margin: '10px 0',
           }}
         >
-          <Button variant="contained" onClick={onShow}>
+          <Button variant="contained" onClick={handleShowPopup}>
             <AddIcon />
             Thêm thể loại sách
           </Button>
@@ -121,7 +130,7 @@ const BookCategory = () => {
                     <StyledTableCell>{bookType.id}</StyledTableCell>
                     <StyledTableCell>{bookType.name}</StyledTableCell>
                     <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(bookType)}>
+                      <Button onClick={() => handleShowPopupEdit(bookType)}>
                         <DriveFileRenameOutlineIcon />
                       </Button>
                       <Button onClick={() => onDelete(bookType.id)}>

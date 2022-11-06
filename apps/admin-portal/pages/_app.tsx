@@ -1,5 +1,5 @@
 import RouteGuard from '@components/RouteGuard';
-import Toast from '@components/ToastMessage';
+import Toast from '@components/AlertMessages';
 import { Box } from '@mui/material';
 import reduxStore from '@store/store';
 import { AppProps } from 'next/app';

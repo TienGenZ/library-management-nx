@@ -21,12 +21,14 @@ import {
   TableRow,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
+import { setAlert } from '@store/appSlice';
 import {
   useDeleteCheckoutMutation,
   useGetAllCheckoutMutation,
   useUpdateCheckoutMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface ReaderToBooks {
@@ -51,6 +53,7 @@ const Transition = React.forwardRef(function Transition(
 });
 
 const Checkout = () => {
+  const dispatch = useDispatch();
   const [page, setPage] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
   const [data, setData] = useState<ReaderToBooks[]>([]);
@@ -143,6 +146,12 @@ const Checkout = () => {
 
   useEffect(() => {
     if (removeCheckoutResult.isSuccess) {
+      dispatch(
+        setAlert({
+          message: 'Xóa phiếu mượn sách thành công',
+        })
+      );
+
       getCheckout(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,6 +159,11 @@ const Checkout = () => {
 
   useEffect(() => {
     if (returnBookResult.isSuccess) {
+      dispatch(
+        setAlert({
+          message: 'Nhận trả sách thành công',
+        })
+      );
       getCheckout(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -157,7 +171,13 @@ const Checkout = () => {
 
   useEffect(() => {
     if (removeCheckoutResult.isError || returnBookResult.isError) {
-      console.log('errrrr');
+      dispatch(
+        setAlert({
+          severity: 'error',
+          title: 'Oops!',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [removeCheckoutResult.isError, returnBookResult.isError]);

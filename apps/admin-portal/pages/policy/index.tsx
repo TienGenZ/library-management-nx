@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
+import { setAlert } from '@store/appSlice';
 import {
   useCreatePolicyMutation,
   useGetPolicyMutation,
   useUpdatePolicyMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { formControl, input } from './styles';
 
 export interface PolicyValue {
@@ -28,6 +30,7 @@ const Policy = () => {
     maxBooks: undefined,
     maxDate: undefined,
   };
+  const dispatch = useDispatch();
   const [policy, setPolicy] = useState<PolicyValue>(initValue);
   const [getPolicy, getPolicyResult] = useGetPolicyMutation();
   const [createPolicy, createResult] = useCreatePolicyMutation();
@@ -56,7 +59,7 @@ const Policy = () => {
 
   useEffect(() => {
     if (createResult.isSuccess || updateResult.isSuccess) {
-      console.log('success');
+      dispatch(setAlert({ message: 'Thay đổi quy định thành công' }));
     }
   }, [createResult.isSuccess, updateResult.isSuccess]);
 
@@ -66,7 +69,12 @@ const Policy = () => {
       updateResult.isError ||
       getPolicyResult.isError
     ) {
-      console.log('errrr');
+      dispatch(
+        setAlert({
+          severity: 'error',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
     }
   }, [createResult.isError, updateResult.isError, getPolicyResult.isError]);
 

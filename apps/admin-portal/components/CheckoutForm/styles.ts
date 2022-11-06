@@ -13,6 +13,7 @@ export const formControl = {
 
 export const flex = {
   display: 'flex',
+  mr: '20px',
 };
 
 export const input = {
@@ -24,6 +25,14 @@ export const input = {
 };
 
 export const title = {
-    textAlign: 'center',
-    margin: '10px 0',
-  }
+  textAlign: 'center',
+  margin: '10px 0',
+};
+
+export const detailText = {
+  marginTop: '2px',
+  fontWeight: '600',
+  color: '#454545',
+  marginRight: '20px',
+  fontSize: '15px !important',
+};

@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import {
   Box,
-  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -11,12 +11,18 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { setAuthorized, setUser } from '@store/appSlice';
+import { setAlert, setAuthorized, setUser } from '@store/appSlice';
 import { useSignInMutation } from '@store/libraryApi';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import {
+  inputPassword,
+  inputUsername,
+  rememberCheckbox,
+  submitButton,
+} from './style';
 
 interface User {
   username: string;
@@ -26,7 +32,7 @@ interface User {
 const SignIn = () => {
   const dispatch = useDispatch();
   const [signIn, result] = useSignInMutation();
-  const { data, error, isSuccess, isError } = result;
+  const { data, error, isSuccess, isError, isLoading } = result;
   const [values, setValues] = useState<User>({
     username: '',
     password: '',
@@ -58,6 +64,7 @@ const SignIn = () => {
     if (isSuccess) {
       dispatch(setAuthorized(true));
       dispatch(setUser(data));
+      dispatch(setAlert({ message: 'Đăng nhập thành công' }));
       router.push('/reader');
     }
   }, [isSuccess]);
@@ -66,9 +73,20 @@ const SignIn = () => {
     if (isError) {
       dispatch(setAuthorized(false));
       if ('status' in error && error.status === 500) {
-        console.log(error.status);
+        dispatch(
+          setAlert({
+            severity: 'error',
+            title: 'Oops!',
+            message: 'Có lỗi xảy ra - vui lòng liên hệ với quản trị viên',
+          })
+        );
       } else {
-        console.log(error);
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thông tin tài khoản không chính xác',
+          })
+        );
       }
     }
   }, [isError]);
@@ -138,6 +156,7 @@ const SignIn = () => {
             height="300px"
           />
         </Box>
+
         <Box
           sx={{
             flex: '1',
@@ -159,121 +178,108 @@ const SignIn = () => {
           >
             Sign In
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              signIn(values);
             }}
           >
-            <FormControl
-              sx={{
-                marginBottom: '10px',
-              }}
-              variant="outlined"
-            >
-              <TextField
-                required
-                sx={{
-                  border: '1px solid rgb(90, 34, 139)',
-                  '& fieldset': { border: 'none' },
-                }}
-                placeholder="Username"
-                size="small"
-                type="text"
-                value={values.username}
-                onChange={handleChange('username')}
-                InputProps={{
-                  sx: {
-                    '& ::placeholder': {
-                      fontFamily: "'Roboto','Helvetica','Arial',sans-serif",
-                      color: '#000 !important',
-                    },
-                    fontWeight: '500',
-                  },
-                }}
-              />
-            </FormControl>
-            <FormControl
-              sx={{
-                marginBottom: '5px',
-              }}
-              variant="outlined"
-            >
-              <TextField
-                required
-                id="password"
-                sx={{
-                  '& ::placeholder': {
-                    color: '#000',
-                    fontFamily: "'Roboto','Helvetica','Arial',sans-serif",
-                  },
-                  border: '1px solid rgb(90, 34, 139)',
-                  '& fieldset': { border: 'none' },
-                }}
-                placeholder="Password"
-                size="small"
-                type={showPassword ? 'text' : 'password'}
-                value={values.password}
-                onChange={handleChange('password')}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </FormControl>
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '15px',
+                flexDirection: 'column',
               }}
             >
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: 'rgb(90, 34, 139)',
-                      '&.Mui-checked': {
-                        color: 'rgb(90, 34, 139)',
-                      },
-                    }}
-                    checked={remember}
-                    onChange={handleClickRemember}
-                  />
-                }
-                label="Remember me"
-                labelPlacement="end"
-              />
-              {/* <Link href="/reset-password">
+              <FormControl
+                sx={{
+                  marginBottom: '10px',
+                }}
+                variant="outlined"
+              >
+                <TextField
+                  required
+                  sx={{
+                    border: '1px solid rgb(90, 34, 139)',
+                    '& fieldset': { border: 'none' },
+                  }}
+                  placeholder="Username"
+                  size="small"
+                  type="text"
+                  value={values.username}
+                  onChange={handleChange('username')}
+                  InputProps={{
+                    sx: inputUsername,
+                  }}
+                />
+              </FormControl>
+              <FormControl
+                sx={{
+                  marginBottom: '5px',
+                }}
+                variant="outlined"
+              >
+                <TextField
+                  required
+                  id="password"
+                  sx={inputPassword}
+                  placeholder="Password"
+                  size="small"
+                  type={showPassword ? 'text' : 'password'}
+                  value={values.password}
+                  onChange={handleChange('password')}
+                  InputProps={{
+                    sx: {
+                      fontFamily: 'Montserrat',
+                      fontWeight: '500',
+                    },
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </FormControl>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '15px',
+                }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={rememberCheckbox}
+                      checked={remember}
+                      onChange={handleClickRemember}
+                    />
+                  }
+                  label="Remember me"
+                  labelPlacement="end"
+                />
+                {/* <Link href="/reset-password">
                 <p>Forgot password</p>
               </Link> */}
+              </Box>
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                sx={submitButton}
+                loading={isLoading}
+                loadingPosition="end"
+              >
+                Sign In
+              </LoadingButton>
             </Box>
-            <Button
-              variant="contained"
-              onClick={() => signIn(values)}
-              sx={{
-                background: 'rgb(90, 34, 139)',
-                fontWeight: '500',
-                '&:hover': {
-                  background: 'rgb(241, 231, 254);',
-                  color: 'rgb(90, 34, 139)',
-                },
-              }}
-            >
-              Sign In
-            </Button>
-          </Box>
+          </form>
         </Box>
       </Box>
     </Box>

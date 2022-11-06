@@ -1,3 +1,4 @@
+import { AlertProps } from '@components/AlertMessages';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
@@ -15,6 +16,11 @@ const initialState = {
     role: null,
     username: null,
   },
+  notification: {
+    severity: null,
+    title: null,
+    message: null,
+  },
   authorized: false,
 };
 // Actual Slice
@@ -29,6 +35,9 @@ export const appSlice = createSlice({
     setAuthorized: (state, action: PayloadAction<boolean>) => {
       state.authorized = action.payload;
     },
+    setAlert: (state, action) => {
+      state.notification = action.payload;
+    },
   },
   // Special reducer for hydrating the state. Special case for next-redux-wrapper
   extraReducers: {
@@ -41,6 +50,7 @@ export const appSlice = createSlice({
   },
 });
 
-export const { clearStore, setUser, setAuthorized } = appSlice.actions;
+export const { clearStore, setUser, setAuthorized, setAlert } =
+  appSlice.actions;
 
 export default appSlice.reducer;
