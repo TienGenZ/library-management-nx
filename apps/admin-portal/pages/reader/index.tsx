@@ -1,13 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import API from '@api/index';
-import FormCard, { CardValue } from '@components/ReaderForm';
+import FormCard from '@components/ReaderForm';
 import SearchBar from '@components/SearchBox';
+import Transition from '@components/Transition';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Pagination,
   Paper,
   Table,
@@ -16,9 +21,13 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { AppState } from '@store/store';
+import { setAlert } from '@store/appSlice';
+import {
+  useDeleteReaderMutation,
+  useGetAllReaderMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 export interface Reader {
   id: number;
@@ -36,23 +45,20 @@ const Reader = () => {
   const [readerEdit, setReaderEdit] = useState<Reader>(null);
   const [page, setPage] = useState(1);
   const [readerList, setReaderList] = useState<Reader[]>([]);
-  const user = useSelector((state: AppState) => state.app.user);
+  const [showConfirm, setShowConfim] = useState(false);
+  const [readerId, setReaderId] = useState(null);
+  const [getReader, getResult] = useGetAllReaderMutation();
+  const [removeReader, removeResult] = useDeleteReaderMutation();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    console.log(user);
-  }, []);
-
-  const deleteReader = (id: number) => {
-    API.delete(`/reader/${id}`)
-      .then((response) => {
-        getReader();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleAcceptedConfirm = () => {
+    if (readerId) {
+      removeReader(readerId);
+      setShowConfim(false);
+    }
   };
 
-  const onShow = () => {
+  const handleShowPopup = () => {
     setReaderEdit(null);
     setShowPopup(true);
   };
@@ -63,16 +69,13 @@ const Reader = () => {
   };
 
   const onDelete = (id: number) => {
-    deleteReader(id);
+    setReaderId(id);
+    setShowConfim(true);
   };
 
-  const onClose = (closed: boolean) => {
+  const closePopup = (closed: boolean) => {
     setShowPopup(closed);
     setReaderEdit(null);
-  };
-
-  const handleValue = (value: CardValue) => {
-    getReader();
   };
 
   const handleChangePage = (
@@ -83,18 +86,32 @@ const Reader = () => {
     console.log(`Current page: ${value}`);
   };
 
-  const getReader = () => {
-    API.get('/reader')
-      .then((response) => {
-        setReaderList(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  useEffect(() => {
+    if (getResult.isSuccess) {
+      setReaderList(getResult.data);
+    }
+  }, [getResult.isSuccess]);
 
   useEffect(() => {
-    getReader();
+    if (removeResult.isSuccess) {
+      dispatch(setAlert({ message: 'Xóa thẻ độc giả thành công' }));
+      getReader(null);
+    }
+  }, [removeResult.isSuccess]);
+
+  useEffect(() => {
+    if (removeResult.isError) {
+      dispatch(
+        setAlert({
+          severity: 'error',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
+    }
+  }, [removeResult.isError]);
+
+  useEffect(() => {
+    getReader(null);
   }, []);
 
   return (
@@ -123,9 +140,41 @@ const Reader = () => {
             <FormCard
               isOpen={showPopup}
               readerEdit={readerEdit}
-              onClose={onClose}
-              valueChange={handleValue}
+              onClose={closePopup}
+              valueChange={() => getReader(null)}
             />
+            <Dialog
+              open={showConfirm}
+              TransitionComponent={Transition}
+              keepMounted
+              onClose={() => setShowConfim(false)}
+            >
+              <DialogTitle
+                sx={{
+                  fontFamily: 'Montserrat',
+                  textAlign: 'center',
+                  fontWeight: '600',
+                }}
+              >
+                Xóa sách?
+              </DialogTitle>
+              <DialogContent sx={{ minWidth: '400px' }}>
+                <DialogContentText
+                  sx={{ fontFamily: 'Montserrat', fontWeight: '500' }}
+                >
+                  Sau khi xóa không thể khôi phục thông tin
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setShowConfim(false)}>Hủy</Button>
+                <Button
+                  sx={{ color: '#f44336' }}
+                  onClick={handleAcceptedConfirm}
+                >
+                  Xóa
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
 
           <Box>
@@ -139,7 +188,7 @@ const Reader = () => {
               margin: '10px 0',
             }}
           >
-            <Button variant="contained" onClick={onShow}>
+            <Button variant="contained" onClick={handleShowPopup}>
               <AddIcon />
               Lập thẻ độc giả
             </Button>

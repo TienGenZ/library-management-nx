@@ -1,5 +1,4 @@
-import API from '@api/index';
-
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
   Button,
@@ -15,9 +14,15 @@ import {
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { setAlert } from '@store/appSlice';
+import {
+  useCreateReaderMutation,
+  useUpdateReaderMutation,
+} from '@store/libraryApi';
 import dayjs, { Dayjs } from 'dayjs';
 import { Reader } from 'pages/reader';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { flex, formControl, input, label, title } from './styles';
 
 export interface CardValue {
@@ -47,6 +52,9 @@ const FormCard = (props: FormCardProps) => {
   const [open, setOpen] = useState(isOpen);
   const [reader, setReader] = useState(readerEdit);
   const [values, setValues] = useState(initialValue);
+  const [createReader, createResult] = useCreateReaderMutation();
+  const [updateReader, updateResult] = useUpdateReaderMutation();
+  const dispatch = useDispatch();
   const [dob, setDob] = useState<Dayjs | null>(null);
 
   const handleClose = () => {
@@ -62,43 +70,49 @@ const FormCard = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleCreateReader = (values) => {
-    API.post('/reader', values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleUpdateReader = (id: number, values) => {
-    API.put(`/reader/${id}`, values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const handleSave = () => {
     if (reader?.id) {
-      handleUpdateReader(reader.id, values);
+      updateReader({ id: reader.id, body: values });
     } else {
-      handleCreateReader(values);
+      createReader(values);
     }
   };
+
+  useEffect(() => {
+    if (createResult.isSuccess || updateResult.isSuccess) {
+      dispatch(setAlert({ message: 'Thao tác thành công' }));
+      valueChange(values as any);
+      handleClose();
+    }
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isError || updateResult.isError) {
+      const isConflic =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        createResult.error?.status === 409 ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        updateResult.error?.status === 409;
+
+      if (isConflic) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thông tin độc giả đã tồn tại',
+          })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thao tác không thành công. Vui lòng thử lại',
+          })
+        );
+      }
+    }
+  }, [createResult.isError, updateResult.isError]);
 
   // Re-render when isOpen change
   useEffect(() => {

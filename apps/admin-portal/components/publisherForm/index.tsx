@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import API from '@api/index';
 import { PublisherValue } from '@components/PublisherTab';
 import {
@@ -11,7 +12,13 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
+import {
+  useCreatePublisherMutation,
+  useUpdatePublisherMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { flex, formControl, input, label, title } from './styles';
 
 interface FormCardProps {
@@ -28,6 +35,9 @@ const PublisherForm = (props: FormCardProps) => {
   const [open, setOpen] = useState(isOpen);
   const [publisher, setPublisher] = useState(publisherEdit);
   const [values, setValues] = useState(initialValue);
+  const [createPublisher, createResult] = useCreatePublisherMutation();
+  const [updatePublisher, updateResult] = useUpdatePublisherMutation();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpen(false);
@@ -42,51 +52,51 @@ const PublisherForm = (props: FormCardProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleCreatePublisher = (values) => {
-    API.post('/publisher', values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleUpdatePublisher = (id: number, values) => {
-    API.put(`/publisher/${id}`, values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const handleSave = () => {
     if (publisher?.id) {
-      handleUpdatePublisher(publisher.id, values);
+      updatePublisher({ id: publisher.id, body: values });
     } else {
-      handleCreatePublisher(values);
+      createPublisher(values);
     }
   };
 
-  // Re-render when isOpen change
+  useEffect(() => {
+    if (createResult.isSuccess || updateResult.isSuccess) {
+      dispatch(setAlert({ message: 'Thao tác thành công' }));
+      valueChange(values as any);
+      handleClose();
+    }
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isError || updateResult.isError) {
+      const isConflic =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        createResult.error?.status === 409 ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        updateResult.error?.status === 409;
+
+      if (isConflic) {
+        dispatch(
+          setAlert({ severity: 'error', message: 'Nhà xuất bản đã tồn tại' })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thao tác không thành công. Vui lòng thử lại',
+          })
+        );
+      }
+    }
+  }, [createResult.isError, updateResult.isError]);
+
   useEffect(() => {
     setOpen(isOpen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  // Re-render when isOpen change
   useEffect(() => {
     setPublisher(publisherEdit);
 
@@ -94,7 +104,6 @@ const PublisherForm = (props: FormCardProps) => {
       const { name } = publisherEdit;
       setValues({ name });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [publisherEdit]);
 
   return (

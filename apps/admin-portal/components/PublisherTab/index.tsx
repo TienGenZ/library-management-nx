@@ -1,12 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import API from '@api/index';
 import PublisherForm from '@components/PublisherForm';
+import Transition from '@components/Transition';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Pagination,
   Paper,
   Table,
@@ -15,7 +20,13 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
+import {
+  useDeletePublisherMutation,
+  useGetAllPublisherMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 
 export interface PublisherValue {
@@ -28,6 +39,18 @@ const Publisher = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [publishers, setPublishers] = useState<PublisherValue[]>([]);
   const [publisherEdit, setPublisherEdit] = useState(null);
+  const [showConfirm, setShowConfim] = useState(false);
+  const [publisherId, setPublisherId] = useState(null);
+  const [getPublisher, getPublisherResult] = useGetAllPublisherMutation();
+  const [removePublisher, removePublisherResult] = useDeletePublisherMutation();
+  const dispatch = useDispatch();
+
+  const handleAcceptedConfirm = () => {
+    if (publisherId) {
+      removePublisher(publisherId);
+      setShowConfim(false);
+    }
+  };
 
   const onEdit = (publisher: PublisherValue) => {
     setShowPopup(true);
@@ -35,7 +58,8 @@ const Publisher = () => {
   };
 
   const onDelete = (id: number) => {
-    deletePublisher(id);
+    setPublisherId(id);
+    setShowConfim(true);
   };
 
   const handleChangePage = (
@@ -46,42 +70,42 @@ const Publisher = () => {
     console.log(`Current page: ${value}`);
   };
 
-  const onShow = () => {
+  const handleShowPopup = () => {
     setPublisherEdit(null);
     setShowPopup(true);
   };
 
-  const onClose = (closed: boolean) => {
+  const closePopup = (closed: boolean) => {
     setShowPopup(closed);
     setPublisherEdit(null);
   };
 
-  const handleValue = (value) => {
-    getPublishers();
-  };
-
-  const getPublishers = () => {
-    API.get('/publisher')
-      .then((response) => {
-        setPublishers(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const deletePublisher = (id: number) => {
-    API.delete(`/publisher/${id}`)
-      .then(() => {
-        getPublishers();
-      })
-      .catch((error) => {
-        console.log('errr');
-      });
-  };
+  useEffect(() => {
+    if (getPublisherResult.isSuccess) {
+      setPublishers(getPublisherResult?.data);
+    }
+  }, [getPublisherResult.isSuccess]);
 
   useEffect(() => {
-    getPublishers();
+    if (removePublisherResult.isSuccess) {
+      dispatch(setAlert({ message: 'Xóa thể loại sách thành công' }));
+      getPublisher(null);
+    }
+  }, [removePublisherResult.isSuccess]);
+
+  useEffect(() => {
+    if (removePublisherResult.isError) {
+      dispatch(
+        setAlert({
+          severity: 'error',
+          message: 'Có lỗi xảy ra vui lòng thử lại',
+        })
+      );
+    }
+  }, [removePublisherResult.isError]);
+
+  useEffect(() => {
+    getPublisher(null);
   }, []);
 
   return (
@@ -89,9 +113,38 @@ const Publisher = () => {
       <PublisherForm
         isOpen={showPopup}
         publisherEdit={publisherEdit}
-        onClose={onClose}
-        valueChange={handleValue}
+        onClose={closePopup}
+        valueChange={() => getPublisher(null)}
       ></PublisherForm>
+      <Dialog
+        open={showConfirm}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setShowConfim(false)}
+      >
+        <DialogTitle
+          sx={{
+            fontFamily: 'Montserrat',
+            textAlign: 'center',
+            fontWeight: '600',
+          }}
+        >
+          Xóa nhà xuất bản?
+        </DialogTitle>
+        <DialogContent sx={{ minWidth: '400px' }}>
+          <DialogContentText
+            sx={{ fontFamily: 'Montserrat', fontWeight: '500' }}
+          >
+            Sau khi xóa không thể khôi phục thông tin
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowConfim(false)}>Hủy</Button>
+          <Button sx={{ color: '#f44336' }} onClick={handleAcceptedConfirm}>
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Box>
         <Box
           sx={{
@@ -100,7 +153,7 @@ const Publisher = () => {
             margin: '10px 0',
           }}
         >
-          <Button variant="contained" onClick={onShow}>
+          <Button variant="contained" onClick={handleShowPopup}>
             <AddIcon />
             Thêm nhà xuất bản
           </Button>

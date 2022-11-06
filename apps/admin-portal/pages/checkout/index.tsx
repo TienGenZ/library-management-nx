@@ -216,13 +216,20 @@ const Checkout = () => {
           TransitionComponent={Transition}
           keepMounted
           onClose={closeConfirm}
-          aria-describedby="alert-dialog-slide-description"
         >
-          <DialogTitle sx={{ textAlign: 'center' }}>
+          <DialogTitle
+            sx={{
+              fontFamily: 'Montserrat',
+              textAlign: 'center',
+              fontWeight: '600',
+            }}
+          >
             {returnBookId ? 'Nhận trả sách' : 'Xóa phiếu mượn sách?'}
           </DialogTitle>
           <DialogContent sx={{ minWidth: '400px' }}>
-            <DialogContentText id="alert-dialog-slide-description">
+            <DialogContentText
+              sx={{ fontFamily: 'Montserrat', fontWeight: '500' }}
+            >
               {returnBookId
                 ? 'Xác nhận sách đã được trả'
                 : 'Sau khi xóa không thể khôi phục thông tin'}

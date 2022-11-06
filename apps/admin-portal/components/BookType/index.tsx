@@ -1,12 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import API from '@api/index';
 import BookTypeForm from '@components/BookTypeForm';
+import Transition from '@components/Transition';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Pagination,
   Paper,
   Table,
@@ -17,8 +22,8 @@ import {
 } from '@mui/material';
 import { setAlert } from '@store/appSlice';
 import {
-  useGetAllBookTypeMutation,
   useDeleteBookTypeMutation,
+  useGetAllBookTypeMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,6 +39,8 @@ const BookCategory = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [bookTypes, setBookTypes] = useState<BookType[]>([]);
   const [bookTypeEdit, setBookTypeEdit] = useState<BookType>(null);
+  const [showConfirm, setShowConfim] = useState(false);
+  const [bookTypeId, setBookTypeId] = useState(null);
   const [getBooktype, getBookTypeResult] = useGetAllBookTypeMutation();
   const [removeBooktype, removeResult] = useDeleteBookTypeMutation();
   const dispatch = useDispatch();
@@ -43,8 +50,16 @@ const BookCategory = () => {
     setBookTypeEdit(bookType);
   };
 
+  const handleAcceptedConfirm = () => {
+    if (bookTypeId) {
+      removeBooktype(bookTypeId);
+      setShowConfim(false);
+    }
+  };
+
   const onDelete = (id: number) => {
-    removeBooktype(id);
+    setBookTypeId(id);
+    setShowConfim(true);
   };
 
   const handleChangePage = (
@@ -101,6 +116,35 @@ const BookCategory = () => {
         onClose={closePopup}
         valueChange={() => getBooktype(null)}
       ></BookTypeForm>
+      <Dialog
+        open={showConfirm}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => setShowConfim(false)}
+      >
+        <DialogTitle
+          sx={{
+            fontFamily: 'Montserrat',
+            textAlign: 'center',
+            fontWeight: '600',
+          }}
+        >
+          Xóa thể loại sách?
+        </DialogTitle>
+        <DialogContent sx={{ minWidth: '400px' }}>
+          <DialogContentText
+            sx={{ fontFamily: 'Montserrat', fontWeight: '500' }}
+          >
+            Sau khi xóa không thể khôi phục thông tin
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowConfim(false)}>Hủy</Button>
+          <Button sx={{ color: '#f44336' }} onClick={handleAcceptedConfirm}>
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Box>
         <Box
           sx={{

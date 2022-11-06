@@ -17,13 +17,15 @@ export const flex = {
 
 export const input = {
   '& ::placeholder': {
-    fontFamily: "'Roboto','Helvetica','Arial',sans-serif",
+    fontFamily: "'Montserrat','Helvetica','Arial',sans-serif",
     color: '#000 !important',
   },
   fontWeight: '500',
+  fontFamily: 'Montserrat',
+  paddingLeft: '10px',
 };
 
 export const title = {
-    textAlign: 'center',
-    margin: '10px 0',
-  }
+  textAlign: 'center',
+  margin: '10px 0',
+};

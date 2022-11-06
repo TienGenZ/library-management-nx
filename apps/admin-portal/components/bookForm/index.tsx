@@ -1,4 +1,4 @@
-import API from '@api/index';
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Book } from '@components/BookList';
 import { BookType } from '@components/BookType';
 import { PublisherValue } from '@components/PublisherTab';
@@ -15,7 +15,15 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { setAlert } from '@store/appSlice';
+import {
+  useCreateBookMutation,
+  useGetAllBookTypeMutation,
+  useGetAllPublisherMutation,
+  useUpdateBookMutation,
+} from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { flex, formControl, input, label, title } from './styles';
 
 export interface BookFormValue {
@@ -48,6 +56,11 @@ const BookForm = (props: BookFormProps) => {
   const [values, setValues] = useState(initialValue);
   const [bookTypes, setBookTypes] = useState<BookType[]>([]);
   const [publishers, setPublishers] = useState<PublisherValue[]>([]);
+  const [createBook, createResult] = useCreateBookMutation();
+  const [updateBook, updateResult] = useUpdateBookMutation();
+  const [getBookType, getBookTypeResult] = useGetAllBookTypeMutation();
+  const [getPublisher, getPublisherResult] = useGetAllPublisherMutation();
+  const dispatch = useDispatch();
 
   const handleClose = () => {
     setOpen(false);
@@ -62,84 +75,84 @@ const BookForm = (props: BookFormProps) => {
       setValues({ ...values, [prop]: event.target.value });
     };
 
-  const handleCreateBook = (values) => {
-    API.post('/book', values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const handleUpdateBook = (id: number, values) => {
-    API.put(`/book/${id}`, values, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        valueChange(values);
-        handleClose();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getAllBookType = () => {
-    API.get('/book-type')
-      .then((response) => {
-        setBookTypes(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const getAllPublisher = () => {
-    API.get('/publisher')
-      .then((response) => {
-        console.log(response.data);
-        setPublishers(response.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
   const handleSave = () => {
+    const { bookTypeId, publisherId, publishedAt, name, author } = values;
     if (book?.id) {
-      handleUpdateBook(book.id, values);
+      updateBook({
+        id: book.id,
+        body: {
+          bookTypeId,
+          publisherId,
+          publishedAt,
+          name,
+          author,
+        },
+      });
     } else {
-      handleCreateBook(values);
+      createBook(values);
     }
   };
 
-  // Re-render when isOpen change
   useEffect(() => {
     setOpen(isOpen);
     if (isOpen) {
-      getAllBookType();
-      getAllPublisher();
+      getBookType(null);
+      getPublisher(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
-  // Re-render when isOpen change
   useEffect(() => {
     setBook(bookEdit);
 
     if (bookEdit?.id) {
-      console.log(bookEdit);
+      setValues(bookEdit);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookEdit]);
+
+  useEffect(() => {
+    if (getPublisherResult.isSuccess) {
+      setPublishers(getPublisherResult?.data);
+    }
+  }, [getPublisherResult.isSuccess]);
+
+  useEffect(() => {
+    if (getBookTypeResult.isSuccess) {
+      setBookTypes(getBookTypeResult?.data);
+    }
+  }, [getBookTypeResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isSuccess || updateResult.isSuccess) {
+      dispatch(setAlert({ message: 'Thao tác thành công' }));
+      valueChange(values as any);
+      handleClose();
+    }
+  }, [createResult.isSuccess, updateResult.isSuccess]);
+
+  useEffect(() => {
+    if (createResult.isError || updateResult.isError) {
+      const isConflic =
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        createResult.error?.status === 409 ||
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        updateResult.error?.status === 409;
+
+      if (isConflic) {
+        dispatch(
+          setAlert({ severity: 'error', message: 'Thông tin sách đã tồn tại' })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Thao tác không thành công. Vui lòng thử lại',
+          })
+        );
+      }
+    }
+  }, [createResult.isError, updateResult.isError]);
 
   return (
     <Dialog maxWidth="xl" open={open} onClose={handleClose}>

@@ -94,12 +94,10 @@ const BookTypeForm = (props: FormCardProps) => {
     }
   }, [createResult.isError, updateResult.isError]);
 
-  // Re-render when isOpen change
   useEffect(() => {
     setOpen(isOpen);
   }, [isOpen]);
 
-  // Re-render when isOpen change
   useEffect(() => {
     setBookType(bookTypeEdit);
 

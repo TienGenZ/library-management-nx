@@ -28,6 +28,13 @@ export const libraryApi = createApi({
       }),
     }),
 
+    getReaderById: builder.mutation({
+      query: (id: number) => ({
+        url: `/reader/${id}`,
+        method: 'GET',
+      }),
+    }),
+
     createReader: builder.mutation({
       query: (body) => ({
         url: '/reader',
@@ -54,6 +61,13 @@ export const libraryApi = createApi({
     getAllBook: builder.mutation({
       query: () => ({
         url: '/book',
+        method: 'GET',
+      }),
+    }),
+
+    getBookById: builder.mutation({
+      query: (id: number) => ({
+        url: `/book/${id}`,
         method: 'GET',
       }),
     }),
@@ -199,10 +213,12 @@ export const libraryApi = createApi({
 export const {
   useSignInMutation,
   useGetAllReaderMutation,
+  useGetReaderByIdMutation,
   useCreateReaderMutation,
   useUpdateReaderMutation,
   useDeleteReaderMutation,
   useGetAllBookMutation,
+  useGetBookByIdMutation,
   useCreateBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
