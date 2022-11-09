@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { formatDate } from '@common/formatDate';
 import FormCard from '@components/ReaderForm';
 import SearchBar from '@components/SearchBox';
 import Transition from '@components/Transition';
@@ -8,6 +9,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -100,15 +102,16 @@ const Reader = () => {
   }, [removeResult.isSuccess]);
 
   useEffect(() => {
-    if (removeResult.isError) {
+    if (removeResult.isError || getResult.isError) {
       dispatch(
         setAlert({
           severity: 'error',
-          message: 'Có lỗi xảy ra vui lòng thử lại',
+          title: 'Oops!',
+          message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
         })
       );
     }
-  }, [removeResult.isError]);
+  }, [removeResult.isError, getResult.isError]);
 
   useEffect(() => {
     getReader(null);
@@ -215,14 +218,20 @@ const Reader = () => {
                     <StyledTableRow key={reader.id}>
                       <StyledTableCell>{reader.id}</StyledTableCell>
                       <StyledTableCell>{reader.name}</StyledTableCell>
-                      <StyledTableCell>{reader.dob}</StyledTableCell>
+                      <StyledTableCell>
+                        {formatDate(reader.dob)}
+                      </StyledTableCell>
                       <StyledTableCell>{reader.email}</StyledTableCell>
                       <StyledTableCell>{reader.address}</StyledTableCell>
                       <StyledTableCell>
                         {reader.type === 'TEACHER' ? 'Giáo viên' : 'Học sinh'}
                       </StyledTableCell>
-                      <StyledTableCell>{reader.createdAt}</StyledTableCell>
-                      <StyledTableCell>{reader.expiredAt}</StyledTableCell>
+                      <StyledTableCell>
+                        {formatDate(reader.createdAt)}
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        {formatDate(reader.expiredAt)}
+                      </StyledTableCell>
                       <StyledTableCell align="right">
                         <Button onClick={() => onEdit(reader)}>
                           <DriveFileRenameOutlineIcon />
@@ -238,6 +247,17 @@ const Reader = () => {
             </TableContainer>
           </Box>
         </Box>
+        {getResult.isLoading && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress color="secondary" />
+          </Box>
+        )}
         <Box
           sx={{
             display: 'flex',

@@ -1,3 +1,4 @@
+import { formatDate } from '@common/formatDate';
 import CheckoutForm from '@components/CheckoutForm';
 import SearchBar from '@components/SearchBox';
 import AddIcon from '@mui/icons-material/Add';
@@ -30,6 +31,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export interface ReaderToBooks {
   id: number;
@@ -170,17 +172,25 @@ const Checkout = () => {
   }, [returnBookResult.isSuccess]);
 
   useEffect(() => {
-    if (removeCheckoutResult.isError || returnBookResult.isError) {
+    if (
+      removeCheckoutResult.isError ||
+      returnBookResult.isError ||
+      getCheckoutResult.isError
+    ) {
       dispatch(
         setAlert({
           severity: 'error',
           title: 'Oops!',
-          message: 'Có lỗi xảy ra vui lòng thử lại',
+          message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
         })
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [removeCheckoutResult.isError, returnBookResult.isError]);
+  }, [
+    removeCheckoutResult.isError,
+    returnBookResult.isError,
+    getCheckoutResult.isError,
+  ]);
 
   return (
     <Box
@@ -293,11 +303,15 @@ const Checkout = () => {
                       <StyledTableRow key={value.id}>
                         <StyledTableCell>{value.id}</StyledTableCell>
                         <StyledTableCell>{value.readerName}</StyledTableCell>
-                        <StyledTableCell>{value.createdAt}</StyledTableCell>
+                        <StyledTableCell>
+                          {formatDate(value.createdAt)}
+                        </StyledTableCell>
                         <StyledTableCell>{value.bookName}</StyledTableCell>
                         <StyledTableCell>{value.bookType}</StyledTableCell>
                         <StyledTableCell>{value.author}</StyledTableCell>
-                        <StyledTableCell>{value.expiredAt}</StyledTableCell>
+                        <StyledTableCell>
+                          {formatDate(value.expiredAt)}
+                        </StyledTableCell>
                         <StyledTableCell>
                           {value.returned ? 'Đã trả' : 'Đang mượn'}
                         </StyledTableCell>
@@ -320,7 +334,17 @@ const Checkout = () => {
               </TableContainer>
             </Box>
           </Box>
-
+          {getCheckoutResult.isLoading && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CircularProgress color="secondary" />
+            </Box>
+          )}
           <Box
             sx={{
               display: 'flex',

@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import {
   Box,
   Button,
@@ -88,19 +90,24 @@ const FormCard = (props: FormCardProps) => {
 
   useEffect(() => {
     if (createResult.isError || updateResult.isError) {
-      const isConflic =
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        createResult.error?.status === 409 ||
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        updateResult.error?.status === 409;
+      const createErrorStatus = createResult?.error?.status;
+      const createErrorData = createResult?.error?.data;
+      const updateErrorStatus = createResult?.error?.status;
+      const updateErrorData = createResult?.error?.data;
 
-      if (isConflic) {
+      if (createErrorStatus === 409 || updateErrorStatus === 409) {
         dispatch(
           setAlert({
             severity: 'error',
             message: 'Thông tin độc giả đã tồn tại',
+          })
+        );
+      }
+      if (createErrorStatus === 422 || updateErrorStatus === 422) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: createErrorData?.message || updateErrorData?.message,
           })
         );
       } else {

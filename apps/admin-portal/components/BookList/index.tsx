@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { formatDate } from '@common/formatDate';
 import BookForm from '@components/BookForm';
 import Transition from '@components/Transition';
 import AddIcon from '@mui/icons-material/Add';
@@ -205,7 +206,9 @@ const ListBook = () => {
                     <StyledTableCell>{book.id}</StyledTableCell>
                     <StyledTableCell>{book.name}</StyledTableCell>
                     <StyledTableCell>{book.author}</StyledTableCell>
-                    <StyledTableCell>{book.createdAt}</StyledTableCell>
+                    <StyledTableCell>
+                      {formatDate(book.createdAt)}
+                    </StyledTableCell>
                     <StyledTableCell>{book.publishedAt}</StyledTableCell>
                     <StyledTableCell>{book.type}</StyledTableCell>
                     <StyledTableCell>{book.publisher}</StyledTableCell>
