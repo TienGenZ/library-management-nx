@@ -28,6 +28,8 @@ model Admin {
   name      String?
   role      Role?    @default(LIBRARIAN)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }
 
 model Reader {
@@ -39,21 +41,29 @@ model Reader {
   type         ReaderType?    @default(STUDENT)
   expiredAt    DateTime
   createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deleted      Boolean        @default(false)
   readerToBook ReaderToBook[]
 
   @@unique([name, dob])
 }
 
 model BookType {
-  id   Int     @id @default(autoincrement())
-  name String? @unique
-  book Book[]
+  id        Int      @id @default(autoincrement())
+  name      String?  @unique
+  book      Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }
 
 model Publisher {
-  id   Int     @id @default(autoincrement())
-  name String? @unique
-  book Book[]
+  id        Int      @id @default(autoincrement())
+  name      String?  @unique
+  book      Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted   Boolean  @default(false)
 }
 
 model Book {
@@ -64,8 +74,10 @@ model Book {
   type         BookType       @relation(fields: [bookTypeId], references: [id])
   publisher    Publisher      @relation(fields: [publisherId], references: [id])
   author       String
-  publishedAt  String
+  publishedAt  Int
   createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deleted      Boolean        @default(false)
   readerToBook ReaderToBook[]
 }
 
@@ -77,7 +89,9 @@ model ReaderToBook {
   book      Book     @relation(fields: [bookId], references: [id])
   returned  Boolean  @default(false)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   expiredAt String
+  deleted   Boolean  @default(false)
 }
 
 model Policy {

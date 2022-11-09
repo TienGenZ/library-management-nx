@@ -19,6 +19,9 @@ export class ReaderToBooksService {
   async findAllRecord() {
     try {
       return this.prisma.readerToBook.findMany({
+        where: {
+          deleted: false,
+        },
         include: {
           reader: true,
           book: {
@@ -36,6 +39,7 @@ export class ReaderToBooksService {
       return this.prisma.readerToBook.findMany({
         where: {
           ...query,
+          deleted: false,
         },
       });
     } catch (error) {
@@ -48,6 +52,7 @@ export class ReaderToBooksService {
       const data = await this.prisma.readerToBook.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
         include: {
           reader: true,
@@ -65,6 +70,7 @@ export class ReaderToBooksService {
       const data = await this.prisma.readerToBook.findFirstOrThrow({
         where: {
           readerId: Number(id),
+          deleted: false,
         },
         include: {
           reader: true,
@@ -84,6 +90,7 @@ export class ReaderToBooksService {
           id: 1,
           readerId: Number(readerId),
           bookId: Number(bookId),
+          deleted: false,
         },
         include: {
           reader: true,
@@ -113,7 +120,7 @@ export class ReaderToBooksService {
 
       if (count >= maxBooks) {
         const error = new ApiError({
-          message: 'Đã vượt quá số lượng sách mượn tối đa',
+          message: 'Vượt quá số lượng sách mượn tối đa. Vui lòng thử lại',
           statusCode: 422,
         });
         throw createError('ReaderToBooks', error);
@@ -122,7 +129,9 @@ export class ReaderToBooksService {
 
     try {
       const today = new Date();
-      const expiredAt = `${new Date(today.setDate(today.getDate() + maxDate)).toISOString()}`;
+      const expiredAt = `${new Date(
+        today.setDate(today.getDate() + maxDate)
+      ).toISOString()}`;
       const reader = await this.prisma.readerToBook.create({
         data: {
           returned: false,
@@ -162,9 +171,12 @@ export class ReaderToBooksService {
 
   async delete(id: number) {
     try {
-      await this.prisma.readerToBook.delete({
+      await this.prisma.readerToBook.update({
         where: {
           id: Number(id),
+        },
+        data: {
+          deleted: true,
         },
       });
     } catch (error) {

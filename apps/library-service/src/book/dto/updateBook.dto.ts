@@ -22,9 +22,9 @@ export class UpdateBookDto {
   author?: string;
 
   @ApiPropertyOptional()
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  publishedAt?: string;
+  publishedAt?: number;
 }
 
 export class UpdateBookTypeDto {

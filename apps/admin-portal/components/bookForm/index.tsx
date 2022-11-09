@@ -24,7 +24,7 @@ import {
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { flex, formControl, input, label, title } from './styles';
+import { flex, formControl, input, label, MenuProps, title } from './styles';
 
 export interface BookFormValue {
   name: string;
@@ -50,7 +50,14 @@ const BookForm = (props: BookFormProps) => {
     publisherId: null,
     publishedAt: '',
   };
-
+  const [years] = useState(() => {
+    const result: number[] = [];
+    const currentYear: number = new Date().getFullYear();
+    for (let i = 0; i <= 100; i++) {
+      result.push(currentYear - i);
+    }
+    return result;
+  });
   const [open, setOpen] = useState(isOpen);
   const [book, setBook] = useState(bookEdit);
   const [values, setValues] = useState(initialValue);
@@ -206,17 +213,21 @@ const BookForm = (props: BookFormProps) => {
               Năm xuất bản:
             </Typography>
             <FormControl sx={formControl}>
-              <TextField
+              <Select
                 variant="standard"
                 size="small"
-                type="number"
                 value={values?.publishedAt}
+                label="Age"
                 onChange={handleChange('publishedAt')}
-                InputProps={{
-                  sx: input,
-                  inputProps: { min: 0, max: 9999 },
-                }}
-              />
+                MenuProps={MenuProps}
+                sx={{ paddingLeft: '10px' }}
+              >
+                {years.map((year) => (
+                  <MenuItem key={year} value={year}>
+                    {year}
+                  </MenuItem>
+                ))}
+              </Select>
             </FormControl>
           </Box>
 

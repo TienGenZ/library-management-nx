@@ -29,3 +29,12 @@ export const title = {
   textAlign: 'center',
   margin: '10px 0',
 };
+
+export const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: '250px',
+      marginLeft: '10px',
+    },
+  },
+};

@@ -18,6 +18,7 @@ export class ReaderService {
       await this.prisma.reader.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
       });
     } catch (error) {
@@ -30,6 +31,7 @@ export class ReaderService {
       const result = await this.prisma.reader.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
       });
 
@@ -50,6 +52,9 @@ export class ReaderService {
   async findAll() {
     try {
       return this.prisma.reader.findMany({
+        where: {
+          deleted: false,
+        },
         orderBy: {
           id: 'asc',
         },
@@ -64,6 +69,7 @@ export class ReaderService {
       const data = await this.prisma.reader.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
       });
       return data;
@@ -126,9 +132,12 @@ export class ReaderService {
   async delete(id: number) {
     await this.checkExistReader(id);
     try {
-      await this.prisma.reader.delete({
+      await this.prisma.reader.update({
         where: {
           id: Number(id),
+        },
+        data: {
+          deleted: true,
         },
       });
     } catch (error) {

@@ -10,6 +10,9 @@ export class BookTypeService {
   async findAllBookType() {
     try {
       return this.prisma.bookType.findMany({
+        where: {
+          deleted: false,
+        },
         orderBy: {
           id: 'asc',
         },
@@ -24,6 +27,7 @@ export class BookTypeService {
       const data = await this.prisma.bookType.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
       });
       return data;
@@ -56,9 +60,12 @@ export class BookTypeService {
 
   async deleteBookType(id: number) {
     try {
-      return await this.prisma.bookType.delete({
+      return await this.prisma.bookType.update({
         where: {
           id: Number(id),
+        },
+        data: {
+          deleted: true,
         },
       });
     } catch (error) {

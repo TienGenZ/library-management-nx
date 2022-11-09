@@ -37,7 +37,7 @@ export class CreateBookDto {
   author: string;
 
   @ApiProperty()
-  @IsString()
+  @IsInt()
   @IsNotEmpty()
-  publishedAt: string;
+  publishedAt: number;
 }

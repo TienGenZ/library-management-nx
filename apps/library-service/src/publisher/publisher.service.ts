@@ -10,6 +10,9 @@ export class PublisherService {
   async findAllPublisher() {
     try {
       return this.prisma.publisher.findMany({
+        where: {
+          deleted: false,
+        },
         orderBy: {
           id: 'asc',
         },
@@ -24,6 +27,7 @@ export class PublisherService {
       const data = await this.prisma.publisher.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
       });
       return data;
@@ -56,9 +60,12 @@ export class PublisherService {
 
   async deletePublisher(id: number) {
     try {
-      return await this.prisma.publisher.delete({
+      return await this.prisma.publisher.update({
         where: {
           id: Number(id),
+        },
+        data: {
+          deleted: true,
         },
       });
     } catch (error) {

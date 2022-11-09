@@ -45,9 +45,10 @@ const AlertMessages = () => {
         <Alert
           onClose={handleClose}
           severity={notify?.severity || 'success'}
-          sx={{ width: '100%' }}
+          sx={{ width: '100%', fontWeight: 500 }}
+          
         >
-          <AlertTitle>{notify?.title}</AlertTitle>
+          <AlertTitle sx={{ fontWeight: 600 }}>{notify?.title}</AlertTitle>
           {notify?.message}
         </Alert>
       </Snackbar>

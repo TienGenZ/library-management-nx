@@ -40,7 +40,7 @@ const CheckoutForm = (props: ExchangeFormProps) => {
 
   const [openPopup, setOpenPopup] = useState(isOpen);
   const [values, setValues] = useState(initialValue);
-  const [checkout, { isSuccess, isError }] = useCreateCheckoutMutation();
+  const [checkout, { isSuccess, isError, error }] = useCreateCheckoutMutation();
   const [findReader, findReaderResult] = useGetReaderByIdMutation();
   const [findBook, findBookResult] = useGetBookByIdMutation();
   const [readerChecked, setReaderChecked] = useState(null);
@@ -123,13 +123,23 @@ const CheckoutForm = (props: ExchangeFormProps) => {
 
   useEffect(() => {
     if (isError) {
+      const { status, data } = error as any;
       created(false);
-      dispatch(
-        setAlert({
-          severity: 'error',
-          message: 'Có lỗi xảy ra vui lòng thử lại',
-        })
-      );
+      if (status === 422) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: data.message,
+          })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Có lỗi xảy ra vui lòng thử lại',
+          })
+        );
+      }
     }
   }, [isError]);
 
