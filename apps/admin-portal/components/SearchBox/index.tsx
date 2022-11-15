@@ -1,15 +1,12 @@
+import React, { ChangeEventHandler } from 'react';
 import { Box, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
-import React, { useState } from 'react';
 interface SearchBarProps {
-  defaultValue?: string;
-  onChange: (value: string) => void;
+  onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
 }
-const SearchBar = (props: SearchBarProps) => {
-  const { defaultValue = '', onChange } = props;
-  const [value, setValue] = useState<string>(defaultValue);
 
+const SearchBar = (props: SearchBarProps) => {
   return (
     <Box sx={{ borderRadius: '10px', background: '#f2eaff' }}>
       <Box sx={{ display: 'flex', padding: '10px', flexDirection: 'column' }}>
@@ -25,7 +22,8 @@ const SearchBar = (props: SearchBarProps) => {
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="Tìm kiếm thông tin độc giả ..."
-            inputProps={{ 'aria-label': 'search google maps' }}
+            inputProps={{ 'aria-label': 'search reader' }}
+            onChange={props.onChange}
           />
           <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
             <SearchIcon />

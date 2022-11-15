@@ -20,6 +20,7 @@ import {
   useCreateBookMutation,
   useGetAllBookTypeMutation,
   useGetAllPublisherMutation,
+  useGetPolicyMutation,
   useUpdateBookMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
@@ -50,14 +51,7 @@ const BookForm = (props: BookFormProps) => {
     publisherId: null,
     publishedAt: '',
   };
-  const [years] = useState(() => {
-    const result: number[] = [];
-    const currentYear: number = new Date().getFullYear();
-    for (let i = 0; i <= 100; i++) {
-      result.push(currentYear - i);
-    }
-    return result;
-  });
+  const [years, setYears] = useState([]);
   const [open, setOpen] = useState(isOpen);
   const [book, setBook] = useState(bookEdit);
   const [values, setValues] = useState(initialValue);
@@ -67,6 +61,7 @@ const BookForm = (props: BookFormProps) => {
   const [updateBook, updateResult] = useUpdateBookMutation();
   const [getBookType, getBookTypeResult] = useGetAllBookTypeMutation();
   const [getPublisher, getPublisherResult] = useGetAllPublisherMutation();
+  const [getPolicy, getPolicyResult] = useGetPolicyMutation();
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -105,6 +100,7 @@ const BookForm = (props: BookFormProps) => {
     if (isOpen) {
       getBookType(null);
       getPublisher(null);
+      getPolicy(null);
     }
   }, [isOpen]);
 
@@ -160,6 +156,24 @@ const BookForm = (props: BookFormProps) => {
       }
     }
   }, [createResult.isError, updateResult.isError]);
+
+  useEffect(() => {
+    if(getPolicyResult.isSuccess) {
+      const result: number[] = [];
+      const currentYear: number = new Date().getFullYear();
+      for (let i = 0; i <= getPolicyResult.data.bookDate; i++) {
+        result.push(currentYear - i);
+      }
+      setYears(result);
+    }
+
+    if(getPolicyResult.isError) {
+      dispatch(setAlert({
+        serverity: 'error',
+        message: "Không tải được quy định. Vui lòng thử lại sau. "
+      }))
+    }
+  }, [getPolicyResult.isSuccess, getPolicyResult.isError]);
 
   return (
     <Dialog maxWidth="xl" open={open} onClose={handleClose}>

@@ -8,7 +8,8 @@
     "test": "nx test"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} apps/library-service/prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} apps/library-service/prisma/seed.ts",
+    "schema": "apps/library-service/prisma/schema.prisma"
   },
   "private": true,
   "dependencies": {

@@ -78,6 +78,23 @@ export class ReaderService {
     }
   }
 
+  async findByQuery(query: string) {
+    try {
+      const data = await this.prisma.reader.findMany({
+        where: {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          },
+          deleted: false,
+        },
+      });
+      return data;
+    } catch (error) {
+      throw createError('Reader', error);
+    }
+  }
+
   async create(data: CreateReaderDto) {
     const policy = await this.policyService.getPolicy();
     const { cardReaderDuration } = policy;

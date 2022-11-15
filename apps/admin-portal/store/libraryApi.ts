@@ -207,6 +207,13 @@ export const libraryApi = createApi({
         body,
       }),
     }),
+
+    getQueryReader: builder.mutation({
+      query: (query: string) => ({
+        url: `/reader/search/${query}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -237,4 +244,5 @@ export const {
   useGetPolicyMutation,
   useCreatePolicyMutation,
   useUpdatePolicyMutation,
+  useGetQueryReaderMutation,
 } = libraryApi;

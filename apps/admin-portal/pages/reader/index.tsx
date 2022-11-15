@@ -27,7 +27,9 @@ import { setAlert } from '@store/appSlice';
 import {
   useDeleteReaderMutation,
   useGetAllReaderMutation,
+  useGetQueryReaderMutation,
 } from '@store/libraryApi';
+import { time } from 'console';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
@@ -51,6 +53,7 @@ const Reader = () => {
   const [readerId, setReaderId] = useState(null);
   const [getReader, getResult] = useGetAllReaderMutation();
   const [removeReader, removeResult] = useDeleteReaderMutation();
+  const [getQueryReader, getQueryReaderResult] = useGetQueryReaderMutation();
   const dispatch = useDispatch();
 
   const handleAcceptedConfirm = () => {
@@ -87,6 +90,16 @@ const Reader = () => {
     setPage(value);
     console.log(`Current page: ${value}`);
   };
+
+  const handleOnChange = (event) => {
+    const query = event.target.value;
+    if(query) {
+      getQueryReader(query);
+      if (getQueryReaderResult.isSuccess) {
+        setReaderList(getQueryReaderResult.data);
+      }
+    }
+  }
 
   useEffect(() => {
     if (getResult.isSuccess) {
@@ -181,7 +194,7 @@ const Reader = () => {
           </Box>
 
           <Box>
-            <SearchBar onChange={(value) => console.log(value)} />
+            <SearchBar onChange={handleOnChange} />
           </Box>
 
           <Box

@@ -29,6 +29,11 @@ export class ReaderController {
     return this.readerService.findAll();
   }
 
+  @Get('/search/:query')
+  findByQuery(@Param('query') query: string) {
+    return this.readerService.findByQuery(query);
+  }
+
   @Post()
   create(@Body() dto: CreateReaderDto) {
     return this.readerService.create(dto);
