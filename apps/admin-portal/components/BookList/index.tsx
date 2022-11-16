@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { formatDate } from '@common/formatDate';
 import BookForm from '@components/BookForm';
+import SearchBar from '@components/SearchBox';
 import Transition from '@components/Transition';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -25,6 +26,7 @@ import { setAlert } from '@store/appSlice';
 import {
   useDeleteBookMutation,
   useGetAllBookMutation,
+  useGetQueryBookMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -45,12 +47,14 @@ export interface Book {
 const ListBook = () => {
   const [page, setPage] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const [books, setBooks] = useState<Book[]>([]);
   const [bookEdit, setBookEdit] = useState<Book>(null);
   const [showConfirm, setShowConfim] = useState(false);
   const [bookId, setBookId] = useState(null);
   const [getBook, getResult] = useGetAllBookMutation();
   const [removeBook, removeResult] = useDeleteBookMutation();
+  const [getQueryBook, getQueryBookResult] = useGetQueryBookMutation();
   const dispatch = useDispatch();
 
   const handleAcceptedConfirm = () => {
@@ -88,21 +92,65 @@ const ListBook = () => {
     setBookEdit(null);
   };
 
+  const mapBooks = (books: any[]) => {
+    return books.map((book) => {
+      return {
+        id: book?.id,
+        name: book?.name,
+        author: book?.author,
+        publishedAt: book?.publishedAt,
+        createdAt: book?.createdAt,
+        publisher: book?.publisher?.name,
+        publisherId: book?.publisher?.id,
+        bookTypeId: book?.type?.id,
+        type: book?.type?.name,
+      };
+    });
+  };
+
+  const searchBook = async (query: string) => {
+    if (query) {
+      getQueryBook(query);
+      if (getQueryBookResult.isSuccess) {
+        const data = mapBooks(getQueryBookResult.data);
+        setBooks(data);
+      }
+
+      if (getQueryBookResult.isError) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            title: 'Oops!',
+            message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
+          })
+        );
+      }
+    } else {
+      getBook(null);
+    }
+  };
+
+  const handleOnKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const query = event.target.value.trim();
+      searchBook(query);
+      console.log(query);
+    }
+  };
+
+  const handleOnChange = (event) => {
+    const query = event.target.value.trim();
+    setSearchValue(query);
+  };
+
+  const handleOnClickIconSearch = () => {
+    searchBook(searchValue);
+  };
+
   useEffect(() => {
     if (getResult.isSuccess) {
-      const data = getResult?.data?.map((book) => {
-        return {
-          id: book?.id,
-          name: book?.name,
-          author: book?.author,
-          publishedAt: book?.publishedAt,
-          createdAt: book?.createdAt,
-          publisher: book?.publisher?.name,
-          publisherId: book?.publisher?.id,
-          bookTypeId: book?.type?.id,
-          type: book?.type?.name,
-        };
-      });
+      const data = mapBooks(getResult.data);
       setBooks(data);
     }
   }, [getResult.isSuccess]);
@@ -116,6 +164,17 @@ const ListBook = () => {
 
   useEffect(() => {
     if (removeResult.isError) {
+      const error: any = removeResult.error;
+      if (error.status == 403) {
+        console.log(error);
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Sách đang được mượn, vui lòng kiểm tra lại. ',
+          })
+        );
+        return;
+      }
       dispatch(
         setAlert({
           severity: 'error',
@@ -166,6 +225,16 @@ const ListBook = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Box>
+        <SearchBar
+          onKeyDown={handleOnKeyDown}
+          onChange={handleOnChange}
+          onClickIcon={handleOnClickIconSearch}
+          placeHolder={'Nhập tên hoặc thể loại để tìm kiếm sách...'}
+        />
+      </Box>
+
       <Box
         sx={{
           display: 'flex',
@@ -234,7 +303,7 @@ const ListBook = () => {
           }}
         >
           <Pagination
-            count={10}
+            count={1}
             page={page}
             onChange={handleChangePage}
             showFirstButton

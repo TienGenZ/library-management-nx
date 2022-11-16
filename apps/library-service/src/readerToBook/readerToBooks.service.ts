@@ -115,6 +115,7 @@ export class ReaderToBooksService {
         where: {
           readerId: Number(readerId),
           returned: false,
+          deleted: false,
         },
       });
 

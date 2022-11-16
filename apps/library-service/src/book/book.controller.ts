@@ -12,13 +12,9 @@ import {
 import { BookService } from './book.service';
 import {
   CreateBookDto,
-  CreateBookTypeDto,
-  CreatePublisherDto,
 } from './dto/createBook.dto';
 import {
   UpdateBookDto,
-  UpdateBookTypeDto,
-  UpdatePublisherDto,
 } from './dto/updateBook.dto';
 
 @Controller('/book')
@@ -54,6 +50,11 @@ export class BookController {
 
   @Delete('/:id')
   delete(@Param('id') id: number) {
-    return this.bookService.delete(id);
+    return this.bookService.softDelete(id);
+  }
+
+  @Get('/search/:query')
+  findByQuery(@Param('query') query: string) {
+    return this.bookService.findByQuery(query);
   }
 }

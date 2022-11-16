@@ -29,11 +29,6 @@ export class ReaderController {
     return this.readerService.findAll();
   }
 
-  @Get('/search/:query')
-  findByQuery(@Param('query') query: string) {
-    return this.readerService.findByQuery(query);
-  }
-
   @Post()
   create(@Body() dto: CreateReaderDto) {
     return this.readerService.create(dto);
@@ -52,5 +47,10 @@ export class ReaderController {
   @Delete('/:id')
   delete(@Param('id') id: number) {
     return this.readerService.delete(id);
+  }
+
+  @Get('/search/:query')
+  findByQuery(@Param('query') query: string) {
+    return this.readerService.findByQuery(query);
   }
 }

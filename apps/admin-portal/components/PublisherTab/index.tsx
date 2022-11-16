@@ -196,7 +196,7 @@ const Publisher = () => {
         }}
       >
         <Pagination
-          count={10}
+          count={1}
           page={page}
           onChange={handleChangePage}
           showFirstButton

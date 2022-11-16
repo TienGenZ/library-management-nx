@@ -1,4 +1,3 @@
-import { AlertProps } from '@components/AlertMessages';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 

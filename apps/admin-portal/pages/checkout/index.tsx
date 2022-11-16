@@ -26,12 +26,14 @@ import { setAlert } from '@store/appSlice';
 import {
   useDeleteCheckoutMutation,
   useGetAllCheckoutMutation,
+  useGetCheckoutByIdMutation,
   useUpdateCheckoutMutation,
 } from '@store/libraryApi';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
 import CircularProgress from '@mui/material/CircularProgress';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
 export interface ReaderToBooks {
   id: number;
@@ -65,6 +67,7 @@ const Checkout = () => {
   const [getCheckout, getCheckoutResult] = useGetAllCheckoutMutation();
   const [returnBook, returnBookResult] = useUpdateCheckoutMutation();
   const [removeCheckout, removeCheckoutResult] = useDeleteCheckoutMutation();
+  const [getCheckoutById, getCheckoutByIdResult] = useGetCheckoutByIdMutation();
 
   const closeConfirm = () => {
     setShowConfim(false);
@@ -106,6 +109,10 @@ const Checkout = () => {
 
   const onShowPopup = () => {
     setShowPopup(true);
+  };
+
+  const showEditConfirm = (id: number) => {
+    getCheckoutById(id);
   };
 
   useEffect(() => {
@@ -192,6 +199,22 @@ const Checkout = () => {
     getCheckoutResult.isError,
   ]);
 
+  useEffect(() => {
+    if (getCheckoutByIdResult.isSuccess) {
+      console.log(getCheckoutByIdResult.data);
+    }
+
+    if (getCheckoutByIdResult.isError) {
+      dispatch(
+        setAlert({
+          severity: 'error',
+          title: 'Oops!',
+          message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
+        })
+      );
+    }
+  }, [dispatch, getCheckoutByIdResult.isError, getCheckoutByIdResult.isSuccess]);
+
   return (
     <Box
       sx={{
@@ -265,7 +288,7 @@ const Checkout = () => {
         >
           <Box>
             <Box>
-              <SearchBar onChange={(value) => console.log(value)} />
+              <SearchBar placeHolder="Nhập tên độc giả hoặc mã phiếu để tìm kiếm..." />
             </Box>
             <Box
               sx={{
@@ -326,6 +349,9 @@ const Checkout = () => {
                           <Button onClick={() => showRemoveConfirm(value.id)}>
                             <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                           </Button>
+                          <Button onClick={() => showEditConfirm(value.id)}>
+                            <DriveFileRenameOutlineIcon />
+                          </Button>
                         </StyledTableCell>
                       </StyledTableRow>
                     ))}
@@ -353,7 +379,7 @@ const Checkout = () => {
             }}
           >
             <Pagination
-              count={10}
+              count={1}
               page={page}
               onChange={handleChangePage}
               showFirstButton

@@ -1,14 +1,17 @@
-import React, { ChangeEventHandler } from 'react';
+import React, { ChangeEventHandler, KeyboardEventHandler, MouseEventHandler } from 'react';
 import { Box, IconButton, InputBase, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 interface SearchBarProps {
-  onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  onChange?: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  onClickIcon?: () => void
+  placeHolder: string,
 }
 
 const SearchBar = (props: SearchBarProps) => {
   return (
-    <Box sx={{ borderRadius: '10px', background: '#f2eaff' }}>
+    <Box sx={{ borderRadius: '10px', background: '#f2eaff', marginTop: '10px' }}>
       <Box sx={{ display: 'flex', padding: '10px', flexDirection: 'column' }}>
         <Paper
           component="form"
@@ -21,11 +24,12 @@ const SearchBar = (props: SearchBarProps) => {
         >
           <InputBase
             sx={{ ml: 1, flex: 1 }}
-            placeholder="Tìm kiếm thông tin độc giả ..."
+            placeholder={props.placeHolder}
             inputProps={{ 'aria-label': 'search reader' }}
             onChange={props.onChange}
+            onKeyDown={props.onKeyDown}
           />
-          <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+          <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={props.onClickIcon}>
             <SearchIcon />
           </IconButton>
         </Paper>

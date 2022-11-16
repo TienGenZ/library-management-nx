@@ -214,6 +214,20 @@ export const libraryApi = createApi({
         method: 'GET',
       }),
     }),
+
+    getQueryBook: builder.mutation({
+      query: (query: string) => ({
+        url: `/book/search/${query}`,
+        method: 'GET',
+      }),
+    }),
+
+    getCheckoutById: builder.mutation({
+      query: (id: number) => ({
+        url: `/checkout/${id}`,
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -245,4 +259,6 @@ export const {
   useCreatePolicyMutation,
   useUpdatePolicyMutation,
   useGetQueryReaderMutation,
+  useGetQueryBookMutation,
+  useGetCheckoutByIdMutation,
 } = libraryApi;

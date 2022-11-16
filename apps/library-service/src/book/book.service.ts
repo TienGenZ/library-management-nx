@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { createError } from '../errors/errors';
 import { PrismaService } from '../services/prisma.service';
 import { CreateBookDto } from './dto/createBook.dto';
@@ -23,6 +23,9 @@ export class BookService {
   async findAll() {
     try {
       return this.prisma.book.findMany({
+        where: {
+          deleted: false,
+        },
         select: {
           id: true,
           name: true,
@@ -38,11 +41,49 @@ export class BookService {
     }
   }
 
+  async findByQuery(query: string) {
+    try {
+      return this.prisma.book.findMany({
+        select: {
+          id: true,
+          name: true,
+          author: true,
+          publishedAt: true,
+          createdAt: true,
+          type: true,
+          publisher: true,
+        },
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              type: {
+                name: {
+                  contains: query,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          ],
+          deleted: false,
+        },
+      });
+    } catch (error) {
+      throw createError('Book', error);
+    }
+  }
+
   async findById(id: number) {
     try {
       const data = await this.prisma.book.findFirstOrThrow({
         where: {
           id: Number(id),
+          deleted: false,
         },
         include: {
           type: true,
@@ -113,13 +154,35 @@ export class BookService {
     }
   }
 
-  async delete(id: number) {
-    await this.checkExistBook(id);
+  async checkIsBorrowedBook(id: number) {
     try {
-      return await this.prisma.book.delete({
+      const result = await this.prisma.readerToBook.findFirst({
+        where: {
+          bookId: id,
+          deleted: false,
+          returned: false,
+        },
+      });
+      return result;
+    } catch (error) {
+      throw createError('Book', error);
+    }
+  }
+
+  async softDelete(id: number) {
+    await this.checkExistBook(id);
+    const isBorrowed = await this.checkIsBorrowedBook(id);
+    if (isBorrowed?.bookId) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+    try {
+      return await this.prisma.book.update({
         where: {
           id: Number(id),
         },
+        data: {
+          deleted: true,
+        }
       });
     } catch (error) {
       throw createError('Book', error);

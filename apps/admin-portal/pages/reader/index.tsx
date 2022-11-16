@@ -98,6 +98,16 @@ const Reader = () => {
       if (getQueryReaderResult.isSuccess) {
         setReaderList(getQueryReaderResult.data);
       }
+
+      if(getQueryReaderResult.isError) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            title: 'Oops!',
+            message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
+          })
+        );
+      }
     }
   }
 
@@ -194,7 +204,7 @@ const Reader = () => {
           </Box>
 
           <Box>
-            <SearchBar onChange={handleOnChange} />
+            <SearchBar onChange={handleOnChange} placeHolder={'Tìm kiếm thông tin độc giả ...'}/>
           </Box>
 
           <Box
@@ -279,7 +289,7 @@ const Reader = () => {
           }}
         >
           <Pagination
-            count={10}
+            count={1}
             page={page}
             onChange={handleChangePage}
             showFirstButton

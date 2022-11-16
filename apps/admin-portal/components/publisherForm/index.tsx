@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import API from '@api/index';
 import { PublisherValue } from '@components/PublisherTab';
 import {
   Box,
