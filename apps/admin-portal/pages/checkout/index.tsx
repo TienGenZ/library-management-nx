@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { formatDate } from '@common/formatDate';
 import CheckoutForm from '@components/CheckoutForm';
 import SearchBar from '@components/SearchBox';
@@ -44,6 +45,8 @@ export interface ReaderToBooks {
   author: string;
   expiredAt: string;
   returned: boolean;
+  readerId: number;
+  bookId: number;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -67,12 +70,18 @@ const Checkout = () => {
   const [getCheckout, getCheckoutResult] = useGetAllCheckoutMutation();
   const [returnBook, returnBookResult] = useUpdateCheckoutMutation();
   const [removeCheckout, removeCheckoutResult] = useDeleteCheckoutMutation();
-  const [getCheckoutById, getCheckoutByIdResult] = useGetCheckoutByIdMutation();
+  const [checkoutEdit, setCheckoutEdit] = useState(null);
 
   const closeConfirm = () => {
     setShowConfim(false);
     setIdRemove(null);
     setReturnBookId(null);
+    setCheckoutEdit(null);
+  };
+
+  const handleShowPopupEdit = (checkout) => {
+    setShowPopup(true);
+    setCheckoutEdit(checkout);
   };
 
   const handleAcceptedConfirm = () => {
@@ -105,14 +114,11 @@ const Checkout = () => {
 
   const onClosePopup = (closed: boolean) => {
     setShowPopup(closed);
+    setCheckoutEdit(null);
   };
 
   const onShowPopup = () => {
     setShowPopup(true);
-  };
-
-  const showEditConfirm = (id: number) => {
-    getCheckoutById(id);
   };
 
   useEffect(() => {
@@ -135,6 +141,8 @@ const Checkout = () => {
           createdAt,
           expiredAt,
           returned,
+          readerId,
+          bookId,
         } = value;
 
         return {
@@ -146,6 +154,8 @@ const Checkout = () => {
           createdAt,
           expiredAt,
           returned,
+          readerId,
+          bookId,
         };
       });
       setData(allRecord);
@@ -199,22 +209,6 @@ const Checkout = () => {
     getCheckoutResult.isError,
   ]);
 
-  useEffect(() => {
-    if (getCheckoutByIdResult.isSuccess) {
-      console.log(getCheckoutByIdResult.data);
-    }
-
-    if (getCheckoutByIdResult.isError) {
-      dispatch(
-        setAlert({
-          severity: 'error',
-          title: 'Oops!',
-          message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
-        })
-      );
-    }
-  }, [dispatch, getCheckoutByIdResult.isError, getCheckoutByIdResult.isSuccess]);
-
   return (
     <Box
       sx={{
@@ -236,6 +230,7 @@ const Checkout = () => {
         <Box>
           <CheckoutForm
             isOpen={showPopup}
+            checkoutEdit={checkoutEdit}
             onClose={onClosePopup}
             created={(value) => {
               if (value) {
@@ -346,11 +341,11 @@ const Checkout = () => {
                               <DoneAllIcon sx={{ color: '#357a38' }} />
                             </Button>
                           )}
+                          <Button onClick={() => handleShowPopupEdit(value)}>
+                            <DriveFileRenameOutlineIcon />
+                          </Button>
                           <Button onClick={() => showRemoveConfirm(value.id)}>
                             <DeleteOutlineIcon sx={{ color: '#f44336' }} />
-                          </Button>
-                          <Button onClick={() => showEditConfirm(value.id)}>
-                            <DriveFileRenameOutlineIcon />
                           </Button>
                         </StyledTableCell>
                       </StyledTableRow>

@@ -15,7 +15,9 @@ import {
   useCreateCheckoutMutation,
   useGetBookByIdMutation,
   useGetReaderByIdMutation,
+  useUpdateCheckoutMutation,
 } from '@store/libraryApi';
+import { ReaderToBooks } from 'pages/checkout';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { detailText, flex, formControl, input, label, title } from './styles';
@@ -25,14 +27,15 @@ export interface CheckoutFormValue {
   bookId: number;
 }
 
-interface ExchangeFormProps {
+interface CheckoutFormProps {
   isOpen: boolean;
+  checkoutEdit: ReaderToBooks;
   onClose: (value: boolean) => void;
   created: (value: boolean) => void;
 }
 
-const CheckoutForm = (props: ExchangeFormProps) => {
-  const { isOpen = false, onClose, created } = props;
+const CheckoutForm = (props: CheckoutFormProps) => {
+  const { isOpen = false, checkoutEdit, onClose, created } = props;
   const initialValue: CheckoutFormValue = {
     readerId: undefined,
     bookId: undefined,
@@ -40,13 +43,16 @@ const CheckoutForm = (props: ExchangeFormProps) => {
 
   const [openPopup, setOpenPopup] = useState(isOpen);
   const [values, setValues] = useState(initialValue);
-  const [checkout, { isSuccess, isError, error }] = useCreateCheckoutMutation();
+  const [createCheckout, { isSuccess, isError, error }] =
+    useCreateCheckoutMutation();
+  const [updateCheckout, updateResult] = useUpdateCheckoutMutation();
   const [findReader, findReaderResult] = useGetReaderByIdMutation();
   const [findBook, findBookResult] = useGetBookByIdMutation();
   const [readerChecked, setReaderChecked] = useState(null);
   const [bookChecked, setBookChecked] = useState(null);
   const [allValid, setAllValid] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
+  const [checkout, setCheckout] = useState(checkoutEdit);
 
   const dispatch = useDispatch();
 
@@ -56,6 +62,14 @@ const CheckoutForm = (props: ExchangeFormProps) => {
     setValues(initialValue);
     setAllValid(false);
     setShowDetail(false);
+  };
+
+  const handleSave = () => {
+    if (checkout?.id) {
+      updateCheckout({ id: checkout.id, body: values });
+    } else {
+      createCheckout(values);
+    }
   };
 
   const handleChange =
@@ -122,6 +136,14 @@ const CheckoutForm = (props: ExchangeFormProps) => {
   }, [isSuccess]);
 
   useEffect(() => {
+    if (updateResult.isSuccess) {
+      created(true);
+      dispatch(setAlert({ message: 'Chỉnh sửa phiếu mượn sách thành công' }));
+      handleClose();
+    }
+  }, [updateResult.isSuccess]);
+
+  useEffect(() => {
     if (isError) {
       const { status, data } = error as any;
       created(false);
@@ -143,10 +165,43 @@ const CheckoutForm = (props: ExchangeFormProps) => {
     }
   }, [isError]);
 
+  useEffect(() => {
+    if (updateResult.isError) {
+      const { status, data } = updateResult.error as any;
+      created(false);
+      if (status === 422) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: data.message,
+          })
+        );
+      } else {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: 'Có lỗi xảy ra vui lòng thử lại',
+          })
+        );
+      }
+    }
+  }, [updateResult.isError]);
+
   // Re-render when isOpen change
   useEffect(() => {
     setOpenPopup(isOpen);
   }, [isOpen]);
+
+  useEffect(() => {
+    setCheckout(checkoutEdit);
+    if (checkoutEdit?.id) {
+      const { readerId, bookId } = checkoutEdit;
+      setValues({ readerId, bookId });
+      findReader(readerId);
+      findBook(bookId);
+      setShowDetail(true);
+    }
+  }, [checkoutEdit]);
 
   return (
     <Dialog maxWidth="xl" open={openPopup} onClose={handleClose}>
@@ -291,25 +346,18 @@ const CheckoutForm = (props: ExchangeFormProps) => {
                 </Typography>
               </Box>
             </Box>
-
-            {/* <Box sx={{ display: 'flex', marginBottom: '10px' }}>
-                    <Typography variant="inherit" sx={detailText}>
-                      Hạn trả sách:{' '}
-                    </Typography>
-                    <Typography
-                      variant="inherit"
-                      sx={{ fontSize: '15px', fontWeight: '500' }}
-                    >
-                      today
-                    </Typography>
-                  </Box> */}
           </Box>
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Hủy</Button>
-        <Button disabled={!allValid} onClick={() => checkout(values)}>
-          Tạo
+        <Button sx={{ color: 'red' }} onClick={handleClose}>
+          Hủy
+        </Button>
+        <Button
+          disabled={!allValid}
+          onClick={handleSave}
+        >
+          {checkout?.id ? 'Sửa' : 'Tạo'}
         </Button>
       </DialogActions>
     </Dialog>
