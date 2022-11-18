@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { formatDate } from '@common/formatDate';
 import BookForm from '@components/BookForm';
 import SearchBar from '@components/SearchBox';
 import Transition from '@components/Transition';
@@ -42,6 +41,7 @@ export interface Book {
   publisher: string;
   bookTypeId: number;
   type: string;
+  status: number;
 }
 
 const ListBook = () => {
@@ -104,6 +104,7 @@ const ListBook = () => {
         publisherId: book?.publisher?.id,
         bookTypeId: book?.type?.id,
         type: book?.type?.name,
+        status: book?.readerToBook?.length,
       };
     });
   };
@@ -135,7 +136,6 @@ const ListBook = () => {
       event.preventDefault();
       const query = event.target.value.trim();
       searchBook(query);
-      console.log(query);
     }
   };
 
@@ -262,10 +262,8 @@ const ListBook = () => {
                   <StyledTableCell>ID</StyledTableCell>
                   <StyledTableCell>Tên sách</StyledTableCell>
                   <StyledTableCell>Tác giả</StyledTableCell>
-                  <StyledTableCell>Ngày nhập</StyledTableCell>
-                  <StyledTableCell>Năm xuất bản</StyledTableCell>
                   <StyledTableCell>Thể loại</StyledTableCell>
-                  <StyledTableCell>Nhà xuất bản</StyledTableCell>
+                  <StyledTableCell>Trạng thái</StyledTableCell>
                   <StyledTableCell></StyledTableCell>
                 </TableRow>
               </TableHead>
@@ -275,20 +273,23 @@ const ListBook = () => {
                     <StyledTableCell>{book.id}</StyledTableCell>
                     <StyledTableCell>{book.name}</StyledTableCell>
                     <StyledTableCell>{book.author}</StyledTableCell>
-                    <StyledTableCell>
-                      {formatDate(book.createdAt)}
-                    </StyledTableCell>
-                    <StyledTableCell>{book.publishedAt}</StyledTableCell>
                     <StyledTableCell>{book.type}</StyledTableCell>
-                    <StyledTableCell>{book.publisher}</StyledTableCell>
-                    <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(book)}>
+                    <StyledTableCell>{book.status > 0 ? 'Đang cho mươn' : 'Còn trên kệ'}</StyledTableCell>
+                    {book.status > 0 ? <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(book)} disabled>
+                        <DriveFileRenameOutlineIcon />
+                      </Button>
+                      <Button onClick={() => onDelete(book.id)} disabled>
+                        <DeleteOutlineIcon />
+                      </Button>
+                    </StyledTableCell> : <StyledTableCell align="right">
+                      <Button onClick={() => onEdit(book)} >
                         <DriveFileRenameOutlineIcon />
                       </Button>
                       <Button onClick={() => onDelete(book.id)}>
                         <DeleteOutlineIcon sx={{ color: '#f44336' }} />
                       </Button>
-                    </StyledTableCell>
+                    </StyledTableCell>}
                   </StyledTableRow>
                 ))}
               </TableBody>

@@ -34,6 +34,7 @@ export class BookService {
           createdAt: true,
           type: true,
           publisher: true,
+          readerToBook: true,
         },
       });
     } catch (error) {

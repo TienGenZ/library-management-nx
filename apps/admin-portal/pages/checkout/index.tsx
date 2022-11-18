@@ -128,7 +128,6 @@ const Checkout = () => {
 
   useEffect(() => {
     if (getCheckoutResult.isSuccess) {
-      console.log(getCheckoutResult?.data);
       const allRecord = getCheckoutResult?.data.map((value) => {
         const {
           id,
