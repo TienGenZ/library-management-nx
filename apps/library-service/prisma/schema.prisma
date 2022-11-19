@@ -75,6 +75,7 @@ model Book {
   publisher    Publisher      @relation(fields: [publisherId], references: [id])
   author       String
   publishedAt  Int
+  borrowed     Boolean        @default(false)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   deleted      Boolean        @default(false)

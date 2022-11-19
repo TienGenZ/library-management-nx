@@ -9,4 +9,8 @@ export class CreateReaderToBooksDto {
   @ApiProperty()
   @IsInt()
   bookId: number;
+
+  @ApiProperty()
+  @IsInt()
+  borrowedDate: number;
 }

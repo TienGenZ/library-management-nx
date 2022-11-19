@@ -32,7 +32,7 @@ export class ReaderToBooksController {
   }
 
   @Post()
-  createReaderToBook(@Body() dto: CreateReaderToBooksDto) {
+  createReaderToBook(@Body() dto: CreateReaderToBooksDto[]) {
     return this.readerToBooksService.create(dto);
   }
 

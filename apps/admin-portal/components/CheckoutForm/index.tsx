@@ -7,6 +7,15 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  MenuItem,
+  Paper,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
   Typography,
 } from '@mui/material';
@@ -14,6 +23,7 @@ import { setAlert } from '@store/appSlice';
 import {
   useCreateCheckoutMutation,
   useGetBookByIdMutation,
+  useGetPolicyMutation,
   useGetReaderByIdMutation,
   useUpdateCheckoutMutation,
 } from '@store/libraryApi';
@@ -21,6 +31,7 @@ import { ReaderToBooks } from 'pages/checkout';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { detailText, flex, formControl, input, label, title } from './styles';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 export interface CheckoutFormValue {
   readerId: number;
@@ -53,7 +64,11 @@ const CheckoutForm = (props: CheckoutFormProps) => {
   const [allValid, setAllValid] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [checkout, setCheckout] = useState(checkoutEdit);
-
+  const [createValue, setCreateValue] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [getPolicy, result] = useGetPolicyMutation();
+  const [maxDatePolicy, setMaxDatePolicy] = useState(null);
+  const [borrowedDate, setBorrowedDate] = useState(1);
   const dispatch = useDispatch();
 
   const handleClose = () => {
@@ -62,13 +77,22 @@ const CheckoutForm = (props: CheckoutFormProps) => {
     setValues(initialValue);
     setAllValid(false);
     setShowDetail(false);
+    setIsEdit(false);
+    setCreateValue([])
   };
 
   const handleSave = () => {
     if (checkout?.id) {
       updateCheckout({ id: checkout.id, body: values });
     } else {
-      createCheckout(values);
+      const value = createValue.map((x) => {
+        return {
+          readerId: values.readerId,
+          bookId: x.id,
+          borrowedDate: x.borrowedDate,
+        };
+      });
+      createCheckout(value);
     }
   };
 
@@ -86,6 +110,12 @@ const CheckoutForm = (props: CheckoutFormProps) => {
     if (bookId) {
       findBook(bookId);
     }
+  };
+
+  const handleRemoveCheckout = (index: number) => {
+    const newValue = [...createValue];
+    newValue.splice(index, 1);
+    setCreateValue(newValue);
   };
 
   useEffect(() => {
@@ -187,6 +217,17 @@ const CheckoutForm = (props: CheckoutFormProps) => {
     }
   }, [updateResult.isError]);
 
+  useEffect(() => {
+    if (result.isSuccess) {
+      const { maxDate = 4 } = result.data;
+      const value = [];
+      for (let i = 1; i <= maxDate; i++) {
+        value.push(i);
+      }
+      setMaxDatePolicy(value);
+    }
+  }, [result.isSuccess]);
+
   // Re-render when isOpen change
   useEffect(() => {
     setOpenPopup(isOpen);
@@ -200,8 +241,13 @@ const CheckoutForm = (props: CheckoutFormProps) => {
       findReader(readerId);
       findBook(bookId);
       setShowDetail(true);
+      setIsEdit(true);
     }
   }, [checkoutEdit]);
+
+  useEffect(() => {
+    getPolicy(null);
+  }, []);
 
   return (
     <Dialog maxWidth="xl" open={openPopup} onClose={handleClose}>
@@ -252,100 +298,151 @@ const CheckoutForm = (props: CheckoutFormProps) => {
           <Button onClick={handlePreCheckout}>Kiểm tra</Button>
         </Box>
         {showDetail && (
-          <Box
-            sx={{
-              marginTop: '20px',
-              minWidth: '500px',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Box sx={{ display: 'flex' }}>
+          <Box>
+            <Box
+              sx={{
+                marginTop: '20px',
+                minWidth: '500px',
+                display: 'flex',
+              }}
+            >
+              <Box sx={{ flex: 1 }}>
+                <Box sx={{ display: 'flex' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      marginBottom: '10px',
+                      marginRight: '20px',
+                    }}
+                  >
+                    <Typography variant="inherit" sx={detailText}>
+                      Tên độc giả:
+                    </Typography>
+                    <Typography
+                      variant="inherit"
+                      sx={{ fontSize: '15px', fontWeight: '500' }}
+                    >
+                      {readerChecked?.name}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', marginBottom: '10px' }}>
+                  <Typography variant="inherit" sx={detailText}>
+                    Tên sách:
+                  </Typography>
+                  <Typography
+                    variant="inherit"
+                    sx={{ fontSize: '15px', fontWeight: '500' }}
+                  >
+                    {bookChecked?.name}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    marginBottom: '10px',
+                    marginRight: '20px',
+                  }}
+                >
+                  <Typography variant="inherit" sx={detailText}>
+                    Thể loại:
+                  </Typography>
+                  <Typography
+                    variant="inherit"
+                    sx={{ fontSize: '15px', fontWeight: '500' }}
+                  >
+                    {bookChecked?.type?.name}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', marginBottom: '10px' }}>
+                  <Typography variant="inherit" sx={detailText}>
+                    Tác giả:
+                  </Typography>
+                  <Typography
+                    variant="inherit"
+                    sx={{ fontSize: '15px', fontWeight: '500' }}
+                  >
+                    {bookChecked?.author}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+            {!isEdit && (
               <Box
                 sx={{
                   display: 'flex',
-                  marginBottom: '10px',
-                  marginRight: '20px',
                 }}
               >
-                <Typography variant="inherit" sx={detailText}>
-                  Tên độc giả:
-                </Typography>
-                <Typography
-                  variant="inherit"
-                  sx={{ fontSize: '15px', fontWeight: '500' }}
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="inherit" sx={detailText}>
+                    Số ngày mượn:
+                  </Typography>
+                  <FormControl>
+                    <Select
+                      size="small"
+                      value={borrowedDate}
+                      onChange={(e) => setBorrowedDate(+e.target.value)}
+                    >
+                      {maxDatePolicy.map((date) => (
+                        <MenuItem key={date} value={date}>
+                          {date}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Box>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => {
+                    setCreateValue([
+                      ...createValue,
+                      { ...bookChecked, borrowedDate },
+                    ]);
+                  }}
                 >
-                  {readerChecked?.name}
-                </Typography>
+                  Thêm vào danh sách
+                </Button>
               </Box>
-              <Box sx={{ display: 'flex', marginBottom: '10px' }}>
-                <Typography variant="inherit" sx={detailText}>
-                  Email:
-                </Typography>
-                <Typography
-                  variant="inherit"
-                  sx={{ fontSize: '15px', fontWeight: '500' }}
-                >
-                  {readerChecked?.email}
-                </Typography>
-              </Box>
-            </Box>
-
-            <Box sx={{ display: 'flex', marginBottom: '10px' }}>
-              <Typography variant="inherit" sx={detailText}>
-                Tên sách:
-              </Typography>
-              <Typography
-                variant="inherit"
-                sx={{ fontSize: '15px', fontWeight: '500' }}
-              >
-                {bookChecked?.name}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', marginBottom: '10px' }}>
-              <Typography variant="inherit" sx={detailText}>
-                Nhà xuất bản:
-              </Typography>
-              <Typography
-                variant="inherit"
-                sx={{ fontSize: '15px', fontWeight: '500' }}
-              >
-                {bookChecked?.publisher?.name}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex' }}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  marginBottom: '10px',
-                  marginRight: '20px',
-                }}
-              >
-                <Typography variant="inherit" sx={detailText}>
-                  Thể loại:
-                </Typography>
-                <Typography
-                  variant="inherit"
-                  sx={{ fontSize: '15px', fontWeight: '500' }}
-                >
-                  {bookChecked?.type?.name}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: 'flex', marginBottom: '10px' }}>
-                <Typography variant="inherit" sx={detailText}>
-                  Tác giả:
-                </Typography>
-                <Typography
-                  variant="inherit"
-                  sx={{ fontSize: '15px', fontWeight: '500' }}
-                >
-                  {bookChecked?.author}
-                </Typography>
-              </Box>
-            </Box>
+            )}
+          </Box>
+        )}
+        {createValue.length > 0 && (
+          <Box sx={{ mt: '20px' }}>
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Tên sách</TableCell>
+                    <TableCell>Thể loại</TableCell>
+                    <TableCell>Tác giả</TableCell>
+                    <TableCell>Ngày mượn</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {createValue.map((book, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{book?.name}</TableCell>
+                      <TableCell>{book?.type?.name}</TableCell>
+                      <TableCell>{book?.author}</TableCell>
+                      <TableCell>{book?.borrowedDate}</TableCell>
+                      <TableCell>
+                        <HighlightOffOutlinedIcon
+                          onClick={() => handleRemoveCheckout(index)}
+                          sx={{ cursor: 'pointer', color: 'red' }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Box>
         )}
       </DialogContent>
@@ -354,7 +451,7 @@ const CheckoutForm = (props: CheckoutFormProps) => {
           Hủy
         </Button>
         <Button
-          disabled={!allValid}
+          disabled={!allValid || createValue.length < 1}
           onClick={handleSave}
         >
           {checkout?.id ? 'Sửa' : 'Tạo'}

@@ -1,12 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ApiError } from '../errors/api.error';
 import { createError } from '../errors/errors';
+import { PolicyService } from '../policy/policy.service';
 import { PrismaService } from '../services/prisma.service';
 import { CreateBookDto } from './dto/createBook.dto';
 import { UpdateBookDto } from './dto/updateBook.dto';
 
 @Injectable()
 export class BookService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private policyService: PolicyService
+  ) {}
 
   async checkExistBook(id: number) {
     try {
@@ -100,6 +105,20 @@ export class BookService {
   async create(dto: CreateBookDto) {
     const { bookTypeId, publisherId, ...data } = dto;
 
+    const policy = await this.policyService.getPolicy();
+    if (policy) {
+      const { bookDate } = policy;
+      const currentYear = new Date().getFullYear();
+
+      if (currentYear - dto.publishedAt > bookDate) {
+        const error = new ApiError({
+          message: `Chỉ nhận sách trong vòng ${bookDate} năm`,
+          statusCode: 422,
+        });
+        throw createError('ReaderToBooks', error);
+      }
+    }
+
     try {
       const book = await this.prisma.book.create({
         data: {
@@ -183,7 +202,7 @@ export class BookService {
         },
         data: {
           deleted: true,
-        }
+        },
       });
     } catch (error) {
       throw createError('Book', error);

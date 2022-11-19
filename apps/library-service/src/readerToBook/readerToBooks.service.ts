@@ -25,7 +25,7 @@ export class ReaderToBooksService {
         include: {
           reader: true,
           book: {
-            include: { type: true },
+            include: { type: true, publisher: true },
           },
         },
       });
@@ -103,14 +103,14 @@ export class ReaderToBooksService {
     }
   }
 
-  async create(dto: CreateReaderToBooksDto) {
-    const { readerId, bookId, ...data } = dto;
+  async create(dto: CreateReaderToBooksDto[]) {
+    const { readerId } = dto[0];
 
     await this.readerService.checkExpired(Number(readerId));
     const policy = await this.policyService.getPolicy();
-    const { maxDate = 4 } = policy;
+
     if (policy) {
-      const { maxBooks, maxDate } = policy;
+      const { maxBooks } = policy;
       const count = await this.prisma.readerToBook.count({
         where: {
           readerId: Number(readerId),
@@ -119,9 +119,9 @@ export class ReaderToBooksService {
         },
       });
 
-      if (count >= maxBooks) {
+      if (count + dto.length > maxBooks) {
         const error = new ApiError({
-          message: 'Vượt quá số lượng sách mượn tối đa. Vui lòng thử lại',
+          message: `Sách mượn tối đa ${maxBooks} quyển - độc giả đã mượn ${count} quyển`,
           statusCode: 422,
         });
         throw createError('ReaderToBooks', error);
@@ -129,30 +129,29 @@ export class ReaderToBooksService {
     }
 
     try {
-      const today = new Date();
-      const expiredAt = `${new Date(
-        today.setDate(today.getDate() + maxDate)
-      ).toISOString()}`;
-      const reader = await this.prisma.readerToBook.create({
-        data: {
+      const data = dto.map((x) => {
+        let maxDate = policy.maxDate || 4;
+        if (x.borrowedDate < maxDate) {
+          maxDate = x.borrowedDate;
+        }
+
+        const today = new Date();
+        const expiredAt = `${new Date(
+          today.setDate(today.getDate() + maxDate)
+        ).toISOString()}`;
+
+        return {
           returned: false,
           expiredAt,
-          reader: {
-            connect: {
-              id: readerId,
-            },
-          },
-          book: {
-            connect: {
-              id: bookId,
-            },
-          },
-        },
-        include: {
-          reader: true,
-          book: true,
-        },
+          readerId: x.readerId,
+          bookId: x.bookId,
+        };
       });
+
+      const reader = await this.prisma.readerToBook.createMany({
+        data,
+      });
+
       return reader;
     } catch (error) {
       throw createError('ReaderToBook', error);

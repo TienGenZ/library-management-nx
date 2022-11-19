@@ -105,6 +105,7 @@ const ListBook = () => {
         bookTypeId: book?.type?.id,
         type: book?.type?.name,
         status: book?.readerToBook?.length,
+        borrowed: book?.borrowed,
       };
     });
   };
@@ -274,22 +275,28 @@ const ListBook = () => {
                     <StyledTableCell>{book.name}</StyledTableCell>
                     <StyledTableCell>{book.author}</StyledTableCell>
                     <StyledTableCell>{book.type}</StyledTableCell>
-                    <StyledTableCell>{book.status > 0 ? 'Đang cho mươn' : 'Còn trên kệ'}</StyledTableCell>
-                    {book.status > 0 ? <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(book)} disabled>
-                        <DriveFileRenameOutlineIcon />
-                      </Button>
-                      <Button onClick={() => onDelete(book.id)} disabled>
-                        <DeleteOutlineIcon />
-                      </Button>
-                    </StyledTableCell> : <StyledTableCell align="right">
-                      <Button onClick={() => onEdit(book)} >
-                        <DriveFileRenameOutlineIcon />
-                      </Button>
-                      <Button onClick={() => onDelete(book.id)}>
-                        <DeleteOutlineIcon sx={{ color: '#f44336' }} />
-                      </Button>
-                    </StyledTableCell>}
+                    <StyledTableCell>
+                      {book.status > 0 ? 'Đang cho mươn' : 'Còn trên kệ'}
+                    </StyledTableCell>
+                    {book.status > 0 ? (
+                      <StyledTableCell align="right">
+                        <Button onClick={() => onEdit(book)} disabled>
+                          <DriveFileRenameOutlineIcon />
+                        </Button>
+                        <Button onClick={() => onDelete(book.id)} disabled>
+                          <DeleteOutlineIcon />
+                        </Button>
+                      </StyledTableCell>
+                    ) : (
+                      <StyledTableCell align="right">
+                        <Button onClick={() => onEdit(book)}>
+                          <DriveFileRenameOutlineIcon />
+                        </Button>
+                        <Button onClick={() => onDelete(book.id)}>
+                          <DeleteOutlineIcon sx={{ color: '#f44336' }} />
+                        </Button>
+                      </StyledTableCell>
+                    )}
                   </StyledTableRow>
                 ))}
               </TableBody>
