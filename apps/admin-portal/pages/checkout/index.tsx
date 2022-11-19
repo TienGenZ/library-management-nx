@@ -5,6 +5,7 @@ import SearchBar from '@components/SearchBox';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {
   Box,
   Button,
@@ -22,6 +23,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import { TransitionProps } from '@mui/material/transitions';
 import { setAlert } from '@store/appSlice';
 import {
@@ -32,8 +34,6 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
-import CircularProgress from '@mui/material/CircularProgress';
-import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 
 export interface ReaderToBooks {
   id: number;
@@ -65,7 +65,7 @@ const Checkout = () => {
   const [data, setData] = useState<ReaderToBooks[]>([]);
   const [showConfirm, setShowConfim] = useState(false);
   const [idRemove, setIdRemove] = useState(null);
-  const [returnBookId, setReturnBookId] = useState(null);
+  const [bookReturn, setBookReturn] = useState(null);
   const [getCheckout, getCheckoutResult] = useGetAllCheckoutMutation();
   const [returnBook, returnBookResult] = useUpdateCheckoutMutation();
   const [removeCheckout, removeCheckoutResult] = useDeleteCheckoutMutation();
@@ -74,7 +74,7 @@ const Checkout = () => {
   const closeConfirm = () => {
     setShowConfim(false);
     setIdRemove(null);
-    setReturnBookId(null);
+    setBookReturn(null);
     setCheckoutEdit(null);
   };
 
@@ -84,8 +84,11 @@ const Checkout = () => {
   };
 
   const handleAcceptedConfirm = () => {
-    if (returnBookId) {
-      returnBook({ id: returnBookId, body: { returned: true } });
+    if (bookReturn?.id) {
+      returnBook({
+        id: bookReturn.id,
+        body: { returned: true, bookId: bookReturn.bookId },
+      });
     }
     if (idRemove) {
       removeCheckout(idRemove);
@@ -106,9 +109,9 @@ const Checkout = () => {
     setIdRemove(id);
   };
 
-  const showReturnBookConfirm = (id: number) => {
+  const showReturnBookConfirm = (value) => {
     setShowConfim(true);
-    setReturnBookId(id);
+    setBookReturn(value);
   };
 
   const onClosePopup = (closed: boolean) => {
@@ -250,13 +253,13 @@ const Checkout = () => {
               fontWeight: '600',
             }}
           >
-            {returnBookId ? 'Nhận trả sách' : 'Xóa phiếu mượn sách?'}
+            {bookReturn?.id ? 'Nhận trả sách' : 'Xóa phiếu mượn sách?'}
           </DialogTitle>
           <DialogContent sx={{ minWidth: '400px' }}>
             <DialogContentText
               sx={{ fontFamily: 'Montserrat', fontWeight: '500' }}
             >
-              {returnBookId
+              {bookReturn?.id
                 ? 'Xác nhận sách đã được trả'
                 : 'Sau khi xóa không thể khôi phục thông tin'}
             </DialogContentText>
@@ -264,10 +267,10 @@ const Checkout = () => {
           <DialogActions>
             <Button onClick={closeConfirm}>Hủy</Button>
             <Button
-              sx={{ color: returnBookId ? '#357a38' : '#f44336' }}
+              sx={{ color: bookReturn?.id ? '#357a38' : '#f44336' }}
               onClick={handleAcceptedConfirm}
             >
-              {returnBookId ? 'Xác nhận' : 'Xóa'}
+              {bookReturn?.id ? 'Xác nhận' : 'Xóa'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -334,7 +337,7 @@ const Checkout = () => {
                         <StyledTableCell align="right">
                           {!value.returned && (
                             <Button
-                              onClick={() => showReturnBookConfirm(value.id)}
+                              onClick={() => showReturnBookConfirm(value)}
                             >
                               <DoneAllIcon sx={{ color: '#357a38' }} />
                             </Button>

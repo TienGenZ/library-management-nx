@@ -41,7 +41,7 @@ export interface Book {
   publisher: string;
   bookTypeId: number;
   type: string;
-  status: number;
+  borrowed: boolean;
 }
 
 const ListBook = () => {
@@ -276,9 +276,9 @@ const ListBook = () => {
                     <StyledTableCell>{book.author}</StyledTableCell>
                     <StyledTableCell>{book.type}</StyledTableCell>
                     <StyledTableCell>
-                      {book.status > 0 ? 'Đang cho mượn' : 'Còn trên kệ'}
+                      {book.borrowed ? 'Đang cho mượn' : 'Còn trên kệ'}
                     </StyledTableCell>
-                    {book.status > 0 ? (
+                    {book.borrowed ? (
                       <StyledTableCell align="right">
                         <Button onClick={() => onEdit(book)} disabled>
                           <DriveFileRenameOutlineIcon />

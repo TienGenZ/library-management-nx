@@ -40,6 +40,7 @@ export class BookService {
           type: true,
           publisher: true,
           readerToBook: true,
+          borrowed: true,
         },
       });
     } catch (error) {
@@ -58,6 +59,7 @@ export class BookService {
           createdAt: true,
           type: true,
           publisher: true,
+          borrowed: true,
         },
         where: {
           OR: [
@@ -176,11 +178,10 @@ export class BookService {
 
   async checkIsBorrowedBook(id: number) {
     try {
-      const result = await this.prisma.readerToBook.findFirst({
+      const result = await this.prisma.book.findFirst({
         where: {
-          bookId: id,
-          deleted: false,
-          returned: false,
+          id: id,
+          borrowed: true,
         },
       });
       return result;
@@ -192,7 +193,7 @@ export class BookService {
   async softDelete(id: number) {
     await this.checkExistBook(id);
     const isBorrowed = await this.checkIsBorrowedBook(id);
-    if (isBorrowed?.bookId) {
+    if (isBorrowed?.id) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
     try {
@@ -202,6 +203,21 @@ export class BookService {
         },
         data: {
           deleted: true,
+        },
+      });
+    } catch (error) {
+      throw createError('Book', error);
+    }
+  }
+
+  async updateBook(id: number, borrowed: boolean) {
+    try {
+      return this.prisma.book.update({
+        where: {
+          id: +id,
+        },
+        data: {
+          borrowed: borrowed,
         },
       });
     } catch (error) {

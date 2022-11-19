@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BookService } from '../book/book.service';
 import { ApiError } from '../errors/api.error';
 import { createError } from '../errors/errors';
 import { PolicyService } from '../policy/policy.service';
@@ -13,7 +14,8 @@ export class ReaderToBooksService {
   constructor(
     private prisma: PrismaService,
     private readonly policyService: PolicyService,
-    private readonly readerService: ReaderService
+    private readonly readerService: ReaderService,
+    private readonly bookService: BookService
   ) {}
 
   async findAllRecord() {
@@ -140,6 +142,8 @@ export class ReaderToBooksService {
           today.setDate(today.getDate() + maxDate)
         ).toISOString()}`;
 
+        // make book is borrowed
+        this.bookService.updateBook(x.bookId, true);
         return {
           returned: false,
           expiredAt,
@@ -160,6 +164,10 @@ export class ReaderToBooksService {
 
   async update(id: number, data: UpdateReaderToBooksDto) {
     try {
+      if (data.returned) {
+        // make book is not borrowed
+        await this.bookService.updateBook(data.bookId, false);
+      }
       return this.prisma.readerToBook.update({
         where: { id: Number(id) || undefined },
         data,

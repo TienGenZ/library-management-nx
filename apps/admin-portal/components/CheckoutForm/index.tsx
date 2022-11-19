@@ -69,16 +69,19 @@ const CheckoutForm = (props: CheckoutFormProps) => {
   const [getPolicy, result] = useGetPolicyMutation();
   const [maxDatePolicy, setMaxDatePolicy] = useState(null);
   const [borrowedDate, setBorrowedDate] = useState(1);
+  const [isBorrowed, setIsBorrowed] = useState(false);
   const dispatch = useDispatch();
 
   const handleClose = () => {
+    // reset all value
     setOpenPopup(false);
     onClose(false);
     setValues(initialValue);
     setAllValid(false);
     setShowDetail(false);
     setIsEdit(false);
-    setCreateValue([])
+    setCreateValue([]);
+    setIsBorrowed(false);
   };
 
   const handleSave = () => {
@@ -125,6 +128,11 @@ const CheckoutForm = (props: CheckoutFormProps) => {
 
     if (findBookResult.isSuccess) {
       setBookChecked(findBookResult.data);
+
+      // uncheck when show popup edit in first time
+      if (checkoutEdit?.bookId !== findBookResult?.data?.id) {
+        setIsBorrowed(findBookResult?.data?.borrowed);
+      }
     }
 
     if (findBookResult.isSuccess && findReaderResult.isSuccess) {
@@ -372,7 +380,15 @@ const CheckoutForm = (props: CheckoutFormProps) => {
                 </Box>
               </Box>
             </Box>
-            {!isEdit && (
+            {isBorrowed && (
+              <Box sx={{ marginTop: '10px' }}>
+                <Typography sx={{ color: 'red', fontFamily: 'Montserrat' }}>
+                  Sách đang được cho mượn - vui lòng chọn sách khác
+                </Typography>
+              </Box>
+            )}
+
+            {!isEdit && !isBorrowed && (
               <Box
                 sx={{
                   display: 'flex',
@@ -451,7 +467,7 @@ const CheckoutForm = (props: CheckoutFormProps) => {
           Hủy
         </Button>
         <Button
-          disabled={!allValid || createValue.length < 1}
+          disabled={!allValid || (createValue.length < 1 && !isEdit)}
           onClick={handleSave}
         >
           {checkout?.id ? 'Sửa' : 'Tạo'}
