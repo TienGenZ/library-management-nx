@@ -276,7 +276,7 @@ const ListBook = () => {
                     <StyledTableCell>{book.author}</StyledTableCell>
                     <StyledTableCell>{book.type}</StyledTableCell>
                     <StyledTableCell>
-                      {book.status > 0 ? 'Đang cho mươn' : 'Còn trên kệ'}
+                      {book.status > 0 ? 'Đang cho mượn' : 'Còn trên kệ'}
                     </StyledTableCell>
                     {book.status > 0 ? (
                       <StyledTableCell align="right">
