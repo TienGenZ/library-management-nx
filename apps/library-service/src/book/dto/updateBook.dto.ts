@@ -25,6 +25,10 @@ export class UpdateBookDto {
   @IsInt()
   @IsNotEmpty()
   publishedAt?: number;
+
+  @ApiPropertyOptional()
+  @IsNotEmpty()
+  receivingDate: Date;
 }
 
 export class UpdateBookTypeDto {

@@ -30,6 +30,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyledTableCell, StyledTableRow } from './styles';
+import { Dayjs } from 'dayjs';
 
 export interface Book {
   id: number;
@@ -42,6 +43,7 @@ export interface Book {
   bookTypeId: number;
   type: string;
   borrowed: boolean;
+  receivingDate: Dayjs;
 }
 
 const ListBook = () => {
@@ -104,8 +106,8 @@ const ListBook = () => {
         publisherId: book?.publisher?.id,
         bookTypeId: book?.type?.id,
         type: book?.type?.name,
-        status: book?.readerToBook?.length,
         borrowed: book?.borrowed,
+        receivingDate: book?.receivingDate,
       };
     });
   };

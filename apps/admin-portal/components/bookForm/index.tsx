@@ -1,4 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Dayjs } from 'dayjs';
 import { Book } from '@components/BookList';
 import { BookType } from '@components/BookType';
 import { PublisherValue } from '@components/PublisherTab';
@@ -15,6 +18,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { setAlert } from '@store/appSlice';
 import {
   useCreateBookMutation,
@@ -23,8 +29,6 @@ import {
   useGetPolicyMutation,
   useUpdateBookMutation,
 } from '@store/libraryApi';
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { flex, formControl, input, label, MenuProps, title } from './styles';
 
 export interface BookFormValue {
@@ -33,6 +37,7 @@ export interface BookFormValue {
   bookTypeId: number;
   publisherId: number;
   publishedAt: string;
+  receivingDate: Dayjs;
 }
 
 interface BookFormProps {
@@ -43,8 +48,9 @@ interface BookFormProps {
 }
 
 const BookForm = (props: BookFormProps) => {
+  const [dateValue, setDateValue] = useState<Dayjs | null>(null);
   const { bookEdit, isOpen = false, onClose, valueChange } = props;
-  const initialValue: BookFormValue = {
+  const initialValue: Omit<BookFormValue, 'receivingDate'> = {
     name: '',
     author: '',
     bookTypeId: null,
@@ -69,6 +75,7 @@ const BookForm = (props: BookFormProps) => {
     onClose(false);
     setBook(null);
     setValues(initialValue);
+    setDateValue(null);
   };
 
   const handleChange =
@@ -76,6 +83,10 @@ const BookForm = (props: BookFormProps) => {
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setValues({ ...values, [prop]: event.target.value });
     };
+
+  const handleDateChange = (newValue: Dayjs | null) => {
+    setDateValue(newValue);
+  };
 
   const handleSave = () => {
     const { bookTypeId, publisherId, publishedAt, name, author } = values;
@@ -88,10 +99,11 @@ const BookForm = (props: BookFormProps) => {
           publishedAt,
           name,
           author,
+          receivingDate: dateValue,
         },
       });
     } else {
-      createBook(values);
+      createBook({ ...values, receivingDate: dateValue });
     }
   };
 
@@ -109,6 +121,7 @@ const BookForm = (props: BookFormProps) => {
 
     if (bookEdit?.id) {
       setValues(bookEdit);
+      setDateValue(bookEdit.receivingDate);
     }
   }, [bookEdit]);
 
@@ -158,7 +171,7 @@ const BookForm = (props: BookFormProps) => {
   }, [createResult.isError, updateResult.isError]);
 
   useEffect(() => {
-    if(getPolicyResult.isSuccess) {
+    if (getPolicyResult.isSuccess) {
       const result: number[] = [];
       const currentYear: number = new Date().getFullYear();
       for (let i = 0; i <= getPolicyResult.data.bookDate; i++) {
@@ -167,11 +180,13 @@ const BookForm = (props: BookFormProps) => {
       setYears(result);
     }
 
-    if(getPolicyResult.isError) {
-      dispatch(setAlert({
-        serverity: 'error',
-        message: "Không tải được quy định. Vui lòng thử lại sau. "
-      }))
+    if (getPolicyResult.isError) {
+      dispatch(
+        setAlert({
+          serverity: 'error',
+          message: 'Không tải được quy định. Vui lòng thử lại sau. ',
+        })
+      );
     }
   }, [getPolicyResult.isSuccess, getPolicyResult.isError]);
 
@@ -290,6 +305,33 @@ const BookForm = (props: BookFormProps) => {
                   </MenuItem>
                 ))}
               </Select>
+            </FormControl>
+          </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              marginBottom: '20px',
+            }}
+          >
+            <Typography variant="inherit" sx={label}>
+              Ngày nhập:
+            </Typography>
+            <FormControl sx={{ flex: 1 }} variant="standard" size="small">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Date"
+                  inputFormat="MM/DD/YYYY"
+                  value={dateValue}
+                  onChange={handleDateChange}
+                  renderInput={(params) => <TextField {...params} />}
+                >
+                  {publishers.map((publisher) => (
+                    <MenuItem key={publisher.id} value={publisher.id}>
+                      {publisher.name}
+                    </MenuItem>
+                  ))}
+                </DesktopDatePicker>
+              </LocalizationProvider>
             </FormControl>
           </Box>
         </Box>

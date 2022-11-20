@@ -31,6 +31,9 @@ export class BookService {
         where: {
           deleted: false,
         },
+        orderBy: {
+          id: 'asc',
+        },
         select: {
           id: true,
           name: true,
@@ -41,6 +44,7 @@ export class BookService {
           publisher: true,
           readerToBook: true,
           borrowed: true,
+          receivingDate: true,
         },
       });
     } catch (error) {
@@ -60,6 +64,7 @@ export class BookService {
           type: true,
           publisher: true,
           borrowed: true,
+          receivingDate: true,
         },
         where: {
           OR: [

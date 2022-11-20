@@ -40,4 +40,8 @@ export class CreateBookDto {
   @IsInt()
   @IsNotEmpty()
   publishedAt: number;
+  
+  @ApiProperty()
+  @IsNotEmpty()
+  receivingDate: Date;
 }

@@ -67,19 +67,20 @@ model Publisher {
 }
 
 model Book {
-  id           Int            @id @default(autoincrement())
-  name         String?
-  bookTypeId   Int
-  publisherId  Int
-  type         BookType       @relation(fields: [bookTypeId], references: [id])
-  publisher    Publisher      @relation(fields: [publisherId], references: [id])
-  author       String
-  publishedAt  Int
-  borrowed     Boolean        @default(false)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  deleted      Boolean        @default(false)
-  readerToBook ReaderToBook[]
+  id                   Int            @id @default(autoincrement())
+  name                 String?
+  bookTypeId           Int
+  publisherId          Int
+  type                 BookType       @relation(fields: [bookTypeId], references: [id])
+  publisher            Publisher      @relation(fields: [publisherId], references: [id])
+  author               String
+  publishedAt          Int
+  receivingDate        DateTime
+  borrowed             Boolean?       
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  deleted              Boolean        @default(false)
+  readerToBook         ReaderToBook[]
 }
 
 model ReaderToBook {

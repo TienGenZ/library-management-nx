@@ -122,6 +122,8 @@ async function main() {
         publisherId: 2,
         author: 'Thierry Séchan',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date()
       },
       {
         name: '	Tuổi trẻ đáng giá bao nhiêu',
@@ -129,6 +131,8 @@ async function main() {
         publisherId: 3,
         author: 'Rosie Nguyễn',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Bí mật ngôn ngữ cơ thể',
@@ -136,6 +140,8 @@ async function main() {
         publisherId: 3,
         author: 'Thierry Séchan',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: '	Cafe cùng Tony',
@@ -143,6 +149,8 @@ async function main() {
         publisherId: 5,
         author: 'Thierry Séchan',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Khéo ăn nói sẽ có được thiên hạ',
@@ -150,6 +158,8 @@ async function main() {
         publisherId: 2,
         author: 'Dale Carnegie',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: '	Sức mạnh tiềm thức',
@@ -157,6 +167,8 @@ async function main() {
         publisherId: 2,
         author: 'Thierry Séchan',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Lập bản đồ tư duy',
@@ -164,6 +176,8 @@ async function main() {
         publisherId: 5,
         author: 'Tony Buzan',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Bạn đắt giá bao nhiêu',
@@ -171,6 +185,8 @@ async function main() {
         publisherId: 2,
         author: 'Vãn Tình',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Nghĩ giàu làm giàu',
@@ -178,6 +194,8 @@ async function main() {
         publisherId: 3,
         author: 'Napoleon Hill',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Cảm xúc - kẻ thù số 1 của thành công',
@@ -185,6 +203,8 @@ async function main() {
         publisherId: 2,
         author: 'Lê Thẩm Dương',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
       {
         name: 'Thời thơ ấu của các tổng thống Mỹ',
@@ -192,6 +212,8 @@ async function main() {
         publisherId: 6,
         author: 'David Stabler',
         publishedAt: 2020,
+        borrowed: false,
+        receivingDate: new Date(),
       },
     ],
   });
