@@ -228,16 +228,6 @@ const ListBook = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Box>
-        <SearchBar
-          onKeyDown={handleOnKeyDown}
-          onChange={handleOnChange}
-          onClickIcon={handleOnClickIconSearch}
-          placeHolder={'Nhập tên hoặc thể loại để tìm kiếm sách...'}
-        />
-      </Box>
-
       <Box
         sx={{
           display: 'flex',
@@ -245,6 +235,14 @@ const ListBook = () => {
           justifyContent: 'space-between',
         }}
       >
+        <Box>
+          <SearchBar
+            onKeyDown={handleOnKeyDown}
+            onChange={handleOnChange}
+            onClickIcon={handleOnClickIconSearch}
+            placeHolder={'Nhập tên hoặc thể loại để tìm kiếm sách...'}
+          />
+        </Box>
         <Box
           sx={{
             display: 'flex',
@@ -257,7 +255,7 @@ const ListBook = () => {
             Thêm sách
           </Button>
         </Box>
-        <Box sx={{ maxHeight: 'calc(100vh - 260px)', overflow: 'auto' }}>
+        <Box sx={{ maxHeight: 'calc(100vh - 340px)', overflow: 'auto' }}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">
               <TableHead>

@@ -298,11 +298,8 @@ const Checkout = () => {
                 Lập phiếu mượn sách
               </Button>
             </Box>
-            <Box>
-              <TableContainer
-                sx={{ maxHeight: 'calc(100vh - 300px)', overflow: 'auto' }}
-                component={Paper}
-              >
+            <Box sx={{ maxHeight: 'calc(100vh - 300px)', overflow: 'auto' }}>
+              <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
                     <TableRow>
