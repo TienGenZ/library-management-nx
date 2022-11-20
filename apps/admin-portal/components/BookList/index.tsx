@@ -115,36 +115,21 @@ const ListBook = () => {
   const searchBook = async (query: string) => {
     if (query) {
       getQueryBook(query);
-      if (getQueryBookResult.isSuccess) {
-        const data = mapBooks(getQueryBookResult.data);
-        setBooks(data);
-      }
-
-      if (getQueryBookResult.isError) {
-        dispatch(
-          setAlert({
-            severity: 'error',
-            title: 'Oops!',
-            message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
-          })
-        );
-      }
     } else {
       getBook(null);
-    }
-  };
-
-  const handleOnKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      const query = event.target.value.trim();
-      searchBook(query);
     }
   };
 
   const handleOnChange = (event) => {
     const query = event.target.value.trim();
     setSearchValue(query);
+  };
+
+  const handleOnKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      searchBook(searchValue);
+    }
   };
 
   const handleOnClickIconSearch = () => {
@@ -186,6 +171,23 @@ const ListBook = () => {
       );
     }
   }, [removeResult.isError]);
+
+  useEffect(() => {
+    if (getQueryBookResult.isSuccess) {
+      const data = mapBooks(getQueryBookResult.data);
+      setBooks(data);
+    }
+
+    if (getQueryBookResult.isError) {
+      dispatch(
+        setAlert({
+          severity: 'error',
+          title: 'Oops!',
+          message: 'Có lỗi xảy ra vui lòng liên hệ quản trị viên',
+        })
+      );
+    }
+  }, [getQueryBookResult.isSuccess, getQueryBookResult.isError, dispatch]);
 
   useEffect(() => {
     getBook(null);

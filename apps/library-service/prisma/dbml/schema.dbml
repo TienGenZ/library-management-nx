@@ -1,0 +1,109 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Admin {
+  id Int [pk, increment]
+  username String [unique, not null]
+  email String [unique, not null]
+  password String
+  name String
+  role Role [default: 'LIBRARIAN']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [not null, default: false]
+}
+
+Table Reader {
+  id Int [pk, increment]
+  name String
+  email String
+  address String
+  dob String
+  type ReaderType [default: 'STUDENT']
+  expiredAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [not null, default: false]
+  readerToBook ReaderToBook [not null]
+
+  indexes {
+    (name, dob) [unique]
+  }
+}
+
+Table BookType {
+  id Int [pk, increment]
+  name String [unique]
+  book Book [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [not null, default: false]
+}
+
+Table Publisher {
+  id Int [pk, increment]
+  name String [unique]
+  book Book [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [not null, default: false]
+}
+
+Table Book {
+  id Int [pk, increment]
+  name String
+  bookTypeId Int [not null]
+  publisherId Int [not null]
+  type BookType [not null]
+  publisher Publisher [not null]
+  author String [not null]
+  publishedAt Int [not null]
+  receivingDate DateTime [not null]
+  borrowed Boolean
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deleted Boolean [not null, default: false]
+  readerToBook ReaderToBook [not null]
+}
+
+Table ReaderToBook {
+  id Int [pk, increment]
+  readerId Int [not null]
+  bookId Int [not null]
+  reader Reader [not null]
+  book Book [not null]
+  returned Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  expiredAt String [not null]
+  deleted Boolean [not null, default: false]
+}
+
+Table Policy {
+  id Int [pk, increment]
+  minAge Int [not null]
+  maxAge Int [not null]
+  cardReaderDuration Int [not null]
+  bookDate Int [not null]
+  maxBooks Int [not null]
+  maxDate Int [not null]
+}
+
+Enum Role {
+  ADMIN
+  LIBRARIAN
+}
+
+Enum ReaderType {
+  STUDENT
+  TEACHER
+}
+
+Ref: Book.bookTypeId > BookType.id
+
+Ref: Book.publisherId > Publisher.id
+
+Ref: ReaderToBook.readerId > Reader.id
+
+Ref: ReaderToBook.bookId > Book.id

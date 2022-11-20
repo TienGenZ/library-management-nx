@@ -92,14 +92,15 @@ const Reader = () => {
   };
 
   const handleOnChange = (event) => {
-    const query = event.target.value;
-    if(query) {
+    const query = event.target.value.trim();
+
+    if (query) {
       getQueryReader(query);
       if (getQueryReaderResult.isSuccess) {
         setReaderList(getQueryReaderResult.data);
       }
 
-      if(getQueryReaderResult.isError) {
+      if (getQueryReaderResult.isError) {
         dispatch(
           setAlert({
             severity: 'error',
@@ -108,8 +109,10 @@ const Reader = () => {
           })
         );
       }
+    } else {
+      getReader(null);
     }
-  }
+  };
 
   useEffect(() => {
     if (getResult.isSuccess) {
@@ -204,7 +207,10 @@ const Reader = () => {
           </Box>
 
           <Box>
-            <SearchBar onChange={handleOnChange} placeHolder={'Tìm kiếm thông tin độc giả ...'}/>
+            <SearchBar
+              onChange={handleOnChange}
+              placeHolder={'Tìm kiếm thông tin độc giả ...'}
+            />
           </Box>
 
           <Box
