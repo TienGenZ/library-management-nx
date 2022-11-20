@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Certificate } from 'crypto';
 import { BookService } from '../book/book.service';
 import { ApiError } from '../errors/api.error';
 import { createError } from '../errors/errors';
@@ -23,6 +24,9 @@ export class ReaderToBooksService {
       return this.prisma.readerToBook.findMany({
         where: {
           deleted: false,
+        },
+        orderBy: {
+          id: 'asc',
         },
         include: {
           reader: true,
@@ -122,11 +126,19 @@ export class ReaderToBooksService {
       });
 
       if (count + dto.length > maxBooks) {
-        const error = new ApiError({
-          message: `Sách mượn tối đa ${maxBooks} quyển - độc giả đã mượn ${count} quyển`,
-          statusCode: 422,
-        });
-        throw createError('ReaderToBooks', error);
+        if (count > 0) {
+          const error = new ApiError({
+            statusCode: 422,
+            message: `Sách chỉ được mượn tối đa ${maxBooks} quyển - độc giả đã mượn ${count} quyển`,
+          });
+          throw createError('ReaderToBooks', error);
+        } else {
+          const error = new ApiError({
+            statusCode: 422,
+            message: `Sách chỉ được mượn tối đa ${maxBooks} quyển`,
+          });
+          throw createError('ReaderToBooks', error);
+        }
       }
     }
 

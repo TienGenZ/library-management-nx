@@ -115,6 +115,23 @@ const CheckoutForm = (props: CheckoutFormProps) => {
     }
   };
 
+  const handleAddBookToList = () => {
+    if (createValue.length > 0) {
+      const isDuplicate = createValue.find((book) => book.id == bookChecked.id);
+      if (isDuplicate?.id) {
+        dispatch(
+          setAlert({
+            severity: 'error',
+            message: `Sách [${isDuplicate.name}] đã tồn tại trong danh sách`,
+          })
+        );
+        return;
+      }
+      setCreateValue([...createValue, { ...bookChecked, borrowedDate }]);
+    }
+    setCreateValue([...createValue, { ...bookChecked, borrowedDate }]);
+  };
+
   const handleRemoveCheckout = (index: number) => {
     const newValue = [...createValue];
     newValue.splice(index, 1);
@@ -404,7 +421,7 @@ const CheckoutForm = (props: CheckoutFormProps) => {
                       value={borrowedDate}
                       onChange={(e) => setBorrowedDate(+e.target.value)}
                     >
-                      {maxDatePolicy.map((date) => (
+                      {maxDatePolicy?.map((date) => (
                         <MenuItem key={date} value={date}>
                           {date}
                         </MenuItem>
@@ -415,12 +432,7 @@ const CheckoutForm = (props: CheckoutFormProps) => {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => {
-                    setCreateValue([
-                      ...createValue,
-                      { ...bookChecked, borrowedDate },
-                    ]);
-                  }}
+                  onClick={handleAddBookToList}
                 >
                   Thêm vào danh sách
                 </Button>

@@ -221,15 +221,15 @@ async function main() {
   await prisma.reader.createMany({
     data: [
       {
-        name: 'Mai Thị Hằng Thư',
+        name: 'Mai Thị Hằng Thư (HẾT HẠN)',
         email: 'Thumnh@library.com',
         address: 'TP. Hồ Chí Minh',
         dob: '2000-01-01',
         type: 'STUDENT',
-        expiredAt: '2023-05-03T18:03:55.638Z',
+        expiredAt: '2022-05-03T18:03:55.638Z',
       },
       {
-        name: 'Vũ Thị Minh Anh',
+        name: 'Mai Thị Hằng Thư (CÒN HẠN)',
         email: 'Anhvtm@library.com',
         address: 'TP. Hồ Chí Minh',
         dob: '2002-01-01',
